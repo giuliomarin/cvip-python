@@ -2,10 +2,6 @@ import cv2
 import os
 import numpy as np
 
-joinFiles = ['/Users/giulio/Desktop/cvpr',
-             '/Users/giulio/Desktop/eccv']
-outDir = '/Users/giulio/Desktop/fused2'
-
 
 def h2rgb(v1, v2, vh):
     if vh < 0:
@@ -121,6 +117,9 @@ def mergeimages(src1, src2, dst, text = None):
 
 
 if __name__ == "__main__":
+    joinFiles = ['/Users/giulio/Desktop/python',
+                 '/Users/giulio/Desktop/matlab']
+    outDir = '/Users/giulio/Desktop/pymat'
 
     if not os.path.exists(outDir):
         os.makedirs(outDir)
@@ -133,4 +132,4 @@ if __name__ == "__main__":
             if not (os.path.exists(a) and os.path.exists(b)):
                 continue
             outFile = os.path.join(outDir, os.path.basename(a))
-            mergeimages(a, b, outFile, text = ['cvpr', 'eccv'])
+            mergeimages(a, b, outFile, text = ['python', 'matlab'])
