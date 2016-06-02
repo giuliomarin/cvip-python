@@ -40,6 +40,27 @@ def imread32f(imgPath):
     return imFloat
 
 
+def imwrite(imgPath, img, colmap = None):
+    """
+    Write a char/float mat to file
+        \param imgPath : path to the .png image
+        \img : image to store
+    """
+    if (len(img.shape) > 2) and (img.shape[2] == 4):
+        return imwrite32f(imgPath, img)
+    else:
+        if not colmap is None:
+            if len(img.shape) < 3:
+                imggray = img.astype(np.uint8)
+            else:
+                imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            if isinstance(colmap, np.ndarray):
+                img = colmap[imggray] * 255
+            else:
+                img = colmap(imggray) * 255
+        return cv2.imwrite(imgPath, img)
+
+
 def imwrite32f(imgPath, img):
     """
     Write a float matrix in a png file
