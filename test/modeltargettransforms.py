@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from cvip import *
 
 def tohomogeneous(data):
     return np.append(data, np.ones((1, data.shape[1])), 0)
@@ -20,7 +19,11 @@ model = makepolygon(tohomogeneous(np.array([[0, 5, 0], [-1, 8, 0], [1, 8, 0]]).t
 
 # Set target
 Rangle = 60
-Rs = tf.rotation_matrix(np.deg2rad(Rangle), [0, 0, 1])
+Rrad = np.deg2rad(Rangle)
+Rs = np.eye(4, 4)
+Rs[0, 0] = Rs[1, 1] = np.cos(Rrad)
+Rs[0, 1] = -np.sin(Rrad)
+Rs[1, 0] = np.sin(Rrad)
 Tt = np.reshape(np.asarray([3, 1, 0, 0]), (-1, 1))
 target = Rs.dot(model) + Tt
 
