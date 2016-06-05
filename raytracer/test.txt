@@ -1,17 +1,17 @@
 size 640 480
 output test.png
 
-camera 0 15 -20 0 0 0 0 1 0 60
+camera 0 5 -15 0 0 0 0 1 0 60
 
-attenuation 1 0.0 0.005
+attenuation 1 0.0 0.001
 point -5 10 -5 1 1 1
 
-maxverts 4
+#maxverts 4
 
-vertex 10 0 10
-vertex 10 0 -10
-vertex -10 0 -10
-vertex -10 0 10
+#vertex 10 0 10
+#vertex 10 0 -10
+#vertex -10 0 -10
+#vertex -10 0 10
 
 pushTransform
 
@@ -19,16 +19,17 @@ ambient 0.1 0.1 0.1
 diffuse 0.8 0.8 0.8
 shininess 40
 emission 0 0 0
-specular .6 .6 .6
+specular .8 .8 .8
 
-tri 0 1 2
-tri 2 3 0
+checkerboard 0 0 0 0 0 1 1 0 0
+#tri 0 1 2
+#tri 2 3 0
 
 popTransform
 pushTransform
 
 # Now draw the spheres
-specular 0.2 0.2 0.2
+specular 0.5 0.5 0.5
 
 ambient 0.1 0.1 0.2
 diffuse 0.1 0.1 0.8
@@ -40,15 +41,15 @@ pushTransform
 
 ambient 0.1 0.2 0.1
 diffuse 0.1 0.8 0.1
-translate  -5 2 -2
-sphere 0 0 0 2
+translate  -5 3 -2
+sphere 0 0 0 3
 
 popTransform
 pushTransform
 
 specular 0.0 0.0 0.0
 ambient 0.2 0.1 0.1
-diffuse 0.8 0.1 0.1
-translate  0 0 8
+diffuse 0.8 0.3 0.1
+translate  0 5 8
 sphere 0 0 0 5
 popTransform
