@@ -9,9 +9,16 @@ import numpy as np
 
 num_stripes = 4
 
+
 #################
 # Classes
 #################
+
+
+class Parameters:
+    def __init__(self):
+        self.outfilename = 'raytracing.png'
+        self.maxdepth = 5
 
 
 class Camera:
@@ -35,12 +42,6 @@ class Camera:
         self.up = up
         self.fovyd = fovy
         self.fovyr = fovy / 180.0 * np.pi
-
-
-class Parameters:
-    def __init__(self):
-        self.outfilename = 'raytracing.png'
-        self.maxdepth = 5
 
 
 class Light:
@@ -87,12 +88,19 @@ class Point(Light):
 
 class Object:
     def __init__(self):
-        pass
+        self.color = {'ambient': np.array([0.0, 0.0, 0.0]),
+                      'diffuse': np.array([0.0, 0.0, 0.0]),
+                      'specular': np.array([0.0, 0.0, 0.0]),
+                      'shininess': 50.0,
+                      'emission': np.array([0.0, 0.0, 0.0])}
 
     def intersect(self, ray):
         pass
 
     def getnormal(self, ray):
+        pass
+
+    def getcolor(self, p):
         pass
 
 
@@ -108,11 +116,11 @@ class TriangleSet(Object):
         self.normal = normalize(np.cross(self.b - self.a, self.c - self.a))
 
         # Color
-        self.ambient = np.asarray(ambient)
-        self.diffuse = np.asarray(diffuse)
-        self.emission = np.asarray(emission)
-        self.specular = np.asarray(specular)
-        self.shininess = shininess
+        self.color['ambient'] = np.asarray(ambient)
+        self.color['diffuse'] = np.asarray(diffuse)
+        self.color['emission'] = np.asarray(emission)
+        self.color['specular'] = np.asarray(specular)
+        self.color['shininess'] = shininess
 
     def getnormal(self, ray):
         return self.normal
@@ -157,11 +165,11 @@ class Triangle(Object):
         self.normal = normalize(cross(self.b - self.a, self.c - self.a))
 
         # Color
-        self.ambient = np.asarray(ambient)
-        self.diffuse = np.asarray(diffuse)
-        self.emission = np.asarray(emission)
-        self.specular = np.asarray(specular)
-        self.shininess = shininess
+        self.color['ambient'] = np.asarray(ambient)
+        self.color['diffuse'] = np.asarray(diffuse)
+        self.color['emission'] = np.asarray(emission)
+        self.color['specular'] = np.asarray(specular)
+        self.color['shininess'] = shininess
 
     def getnormal(self, ray):
         return self.normal
@@ -196,6 +204,9 @@ class Triangle(Object):
         self.c = np.asarray(np.dot(m, c).T)[0][0:3]
         self.normal = normalize(cross(self.b - self.a, self.c - self.a))
 
+    def getcolor(self, p):
+        return self.color
+
 
 class Plane(Object):
     def __init__(self, position, normal, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
@@ -203,14 +214,14 @@ class Plane(Object):
         # Shape
         Object.__init__(self)
         self.position = np.asarray(position)
-        self.normal = np.asarray(normal)
+        self.normal = normalize(np.asarray(normal))
 
         # Color
-        self.ambient = np.asarray(ambient)
-        self.diffuse = np.asarray(diffuse)
-        self.emission = np.asarray(emission)
-        self.specular = np.asarray(specular)
-        self.shininess = shininess
+        self.color['ambient'] = np.asarray(ambient)
+        self.color['diffuse'] = np.asarray(diffuse)
+        self.color['emission'] = np.asarray(emission)
+        self.color['specular'] = np.asarray(specular)
+        self.color['shininess'] = shininess
 
     def intersect(self, ray):
         denom = np.dot(ray[1], self.normal)
@@ -223,23 +234,35 @@ class Plane(Object):
         return self.normal
 
     def applytransform(self, m):
-        pass
+        pos = np.asmatrix(np.append(self.position, [1])).T
+        self.position = np.asarray(np.dot(m, pos).T)[0][0:3]
+        nor = np.asmatrix(self.normal).T
+        self.normal = np.asarray(np.dot(m[0:3, 0:3], nor).T)[0]
+
+    def getcolor(self, p):
+        return self.color
 
 
 class Checkerboard(Object):
-    def __init__(self, position, normal, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
+    def __init__(self, position, diru, dirv, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
                  specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
         # Shape
         Object.__init__(self)
         self.position = np.asarray(position)
-        self.normal = np.asarray(normal)
+        self.diru = normalize(np.asarray(diru))
+        self.dirv = normalize(np.asarray(dirv))
+        self.normal = cross(self.diru, self.dirv)
 
         # Color
-        self.ambient = np.asarray(ambient)
-        self.diffuse = np.asarray(diffuse)
-        self.emission = np.asarray(emission)
-        self.specular = np.asarray(specular)
-        self.shininess = shininess
+        self.color_plane0 = {'ambient': np.asarray(ambient),
+                             'diffuse': np.asarray(diffuse),
+                             'emission': np.asarray(emission),
+                             'specular': np.asarray(specular),
+                             'shininess': shininess}
+
+        self.color_plane1 = self.color_plane0.copy()
+        self.color_plane1['ambient'] = self.color_plane1['diffuse'] = np.array([0.0, 0.0, 0.0])
+        self.size = 5
 
     def intersect(self, ray):
         denom = np.dot(ray[1], self.normal)
@@ -252,7 +275,23 @@ class Checkerboard(Object):
         return self.normal
 
     def applytransform(self, m):
-        pass
+        pos = np.asmatrix(np.append(self.position, [1])).T
+        self.position = np.asarray(np.dot(m, pos).T)[0][0:3]
+        diru = np.asmatrix(self.diru).T
+        self.diru = np.asarray(np.dot(m[0:3, 0:3], diru).T)[0]
+        dirv = np.asmatrix(self.dirv).T
+        self.dirv = np.asarray(np.dot(m[0:3, 0:3], dirv).T)[0]
+        nor = np.asmatrix(self.normal).T
+        self.normal = np.asarray(np.dot(m[0:3, 0:3], nor).T)[0]
+
+    def getcolor(self, p):
+        pplane = p - self.position
+        pplane = (pplane.dot(self.diru), pplane.dot(self.dirv))
+        if (((pplane[0] % (2 * self.size)) < self.size) and ((pplane[1] % (2 * self.size)) < self.size)) or (
+            ((pplane[0] % (2 * self.size)) >= self.size) and ((pplane[1] % (2 * self.size)) >= self.size)):
+            return self.color_plane0
+        else:
+            return self.color_plane1
 
 
 class Sphere(Object):
@@ -265,11 +304,11 @@ class Sphere(Object):
         self.radius = float(radius)
 
         # Color
-        self.ambient = np.asarray(ambient)
-        self.diffuse = np.asarray(diffuse)
-        self.emission = np.asarray(emission)
-        self.specular = np.asarray(specular)
-        self.shininess = shininess
+        self.color['ambient'] = np.asarray(ambient)
+        self.color['diffuse'] = np.asarray(diffuse)
+        self.color['emission'] = np.asarray(emission)
+        self.color['specular'] = np.asarray(specular)
+        self.color['shininess'] = shininess
 
         # Transformation
         self.m = np.asmatrix(np.eye(4, dtype = np.float32))
@@ -322,23 +361,29 @@ class Sphere(Object):
         self.m = m
         self.Minv = np.linalg.inv(m)
 
+    def getcolor(self, p):
+        return self.color
+
 
 class Scene:
     def __init__(self):
         pass
 
     triangles = []
-    group_triangles = []
+    group_triangles = None
     spheres = []
+    planes = []
+    checkerboards = []
 
     def computegroups(self):
         a = np.asarray([t.a for t in self.triangles])
         b = np.asarray([t.b for t in self.triangles])
         c = np.asarray([t.c for t in self.triangles])
-        self.group_triangles = TriangleSet((a, b, c))
+        if not (len(a) == 0 or len(b) == 0 or len(c) == 0):
+            self.group_triangles = TriangleSet((a, b, c))
 
     def isoccluded(self, ray, r):
-        for obj_class in [self.triangles, self.spheres]:
+        for obj_class in [self.planes, self.checkerboards, self.triangles, self.spheres]:
             for obj_sh in obj_class:
                 if obj_sh.intersect(ray) < r:
                     return True
@@ -358,12 +403,31 @@ class Scene:
             obj = self.spheres[obj_idx]
 
         # Triangles
-        res = self.group_triangles.intersect(ray)
-        if res:
-            t_sh, obj_idx = res
-            if t_sh < t:
-                t = t_sh
-                obj = self.triangles[obj_idx]
+        if not self.group_triangles is None:
+            res = self.group_triangles.intersect(ray)
+            if res:
+                t_sh, obj_idx = res
+                if t_sh < t:
+                    t = t_sh
+                    obj = self.triangles[obj_idx]
+
+        # Planes
+        obj_idx = -1
+        for i, obj_sh in enumerate(self.planes):
+            t_obj = obj_sh.intersect(ray)
+            if t_obj < t:
+                t, obj_idx = t_obj, i
+        if obj_idx >= 0:
+            obj = self.planes[obj_idx]
+
+        # Checkerboards
+        obj_idx = -1
+        for i, obj_sh in enumerate(self.checkerboards):
+            t_obj = obj_sh.intersect(ray)
+            if t_obj < t:
+                t, obj_idx = t_obj, i
+        if obj_idx >= 0:
+            obj = self.checkerboards[obj_idx]
 
         # Check intersection
         if t == np.inf:
@@ -473,6 +537,27 @@ def parsefile(filepath):
                          emission)
             obj.applytransform(transfstack[-1])
             scene.spheres.append(obj)
+        elif cmd == 'plane':
+            obj = Plane(np.asarray([float(line[1]), float(line[2]), float(line[3])]),  # position
+                        np.asarray([float(line[4]), float(line[5]), float(line[6])]),  # normal
+                        ambient,
+                        diffuse,
+                        specular,
+                        shininess,
+                        emission)
+            obj.applytransform(transfstack[-1])
+            scene.planes.append(obj)
+        elif cmd == 'checkerboard':
+            obj = Checkerboard(np.asarray([float(line[1]), float(line[2]), float(line[3])]),  # position
+                               np.asarray([float(line[4]), float(line[5]), float(line[6])]),  # dir u
+                               np.asarray([float(line[7]), float(line[8]), float(line[9])]),  # dir v
+                               ambient,
+                               diffuse,
+                               specular,
+                               shininess,
+                               emission)
+            obj.applytransform(transfstack[-1])
+            scene.checkerboards.append(obj)
         # Transformations
         elif cmd == 'translate':
             transfstack[-1] *= translate(float(line[1]), float(line[2]), float(line[3]))
@@ -535,15 +620,6 @@ def normalize(x):
         return x / np.linalg.norm(x)
 
 
-# def get_color(obj, m):
-#     color = obj['color']
-#     if not hasattr(color, '__len__'):
-#         color = color(m)
-#     return color
-#
-# colorplane = lambda m: (color_plane0 if (int(m[0] * 2) % 2) == (int(m[2] * 2) % 2) else color_plane1)
-
-
 def trace_ray(ray, scene, light):
     # Find first point of intersection with the scene.
     obj_intersection = scene.getintersection(ray)
@@ -555,8 +631,9 @@ def trace_ray(ray, scene, light):
     p = ray[0] + ray[1] * t
     # Find properties of the object.
     n = obj.getnormal(p)
+    obj_col = obj.getcolor(p)
 
-    c_ray = obj.ambient + obj.emission
+    c_ray = obj_col['ambient'] + obj_col['emission']
     # Shadow: find if the point is shadowed or not.
     for l in light:
         l_ray = (p + n * .0001, -l.getdirection(p))
@@ -569,7 +646,8 @@ def trace_ray(ray, scene, light):
         if r == np.inf:
             r = 0.0
         c_ray += l.color / (l.attenuation[0] + l.attenuation[1] * r + l.attenuation[2] * r ** 2) * \
-                 (obj.diffuse * max(np.dot(n, l_ray[1]), 0) + obj.specular * (max(np.dot(n, h), 0) ** obj.shininess))
+                 (obj_col['diffuse'] * max(np.dot(n, l_ray[1]), 0) + obj_col['specular'] * (
+                 max(np.dot(n, h), 0) ** obj_col['shininess']))
     return obj, p, n, c_ray
 
 
@@ -649,7 +727,7 @@ def processstripe((scenedata, idfile, idstripe)):
                 ray = (p + n * 1e-3, normalize(ray[1] - 2 * np.dot(ray[1], n) * n))
                 depth += 1
                 col += reflection * col_ray
-                reflection *= obj.specular
+                reflection *= obj.getcolor(p)['specular']
                 if not np.any(reflection):
                     break
             img[y, x, :] = np.clip(col, 0, 1)
@@ -677,6 +755,7 @@ def processfile(filename, idfile = 0):
     plt.imsave(os.path.join(foldername, param.outfilename), img)
     # plt.imshow(img)
     # plt.show()
+
 
 #################
 # Main
