@@ -1,5 +1,17 @@
 import cv2
-import numpy as np
+import numpy
+
+
+def opencv2matplotlib(img):
+    """
+    Invert channels if input image has 3 channels
+    :param img: input image
+    :return: image converted
+    """
+    if (img.ndim > 2) and (img.shape[2] == 3):
+        return img[:, :, ::-1]
+    else:
+        return img
 
 
 def imread(imgPath):
@@ -13,7 +25,7 @@ def imread(imgPath):
     img = cv2.imread(imgPath, -1)
     if img is None:
         raise IOError('File not found: %s' % imgPath)
-    if img.shape[2] == 4:
+    if (img.ndim > 2) and (img.shape[2] == 4):
         return imread32f(imgPath), 1
     else:
         return img, 0
@@ -31,7 +43,7 @@ def imread32f(imgPath):
         raise IOError('File not found: %s' % imgPath)
     # Convert it to float
     imSize = (img.shape[0], img.shape[1])
-    imFloat = np.zeros(imSize, np.float32)
+    imFloat = numpy.zeros(imSize, numpy.float32)
     try:
         imFloat.data = img.data
     except:
@@ -51,10 +63,10 @@ def imwrite(imgPath, img, colmap = None):
     else:
         if not colmap is None:
             if len(img.shape) < 3:
-                imggray = img.astype(np.uint8)
+                imggray = img.astype(numpy.uint8)
             else:
                 imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            if isinstance(colmap, np.ndarray):
+            if isinstance(colmap, numpy.ndarray):
                 img = colmap[imggray] * 255
             else:
                 img = colmap(imggray) * 255
@@ -68,10 +80,10 @@ def imwrite32f(imgPath, img):
         \img : image to store
     """
     # Check input
-    if not (img.dtype == np.float32):
+    if not (img.dtype == numpy.float32):
         raise TypeError('Image is not float32')
     # Save image
-    imgToWrite = np.zeros((img.shape[0], img.shape[1], 4), np.uint8)
+    imgToWrite = numpy.zeros((img.shape[0], img.shape[1], 4), numpy.uint8)
     imgToWrite.data = img.data
     cv2.imwrite(imgPath, imgToWrite)
 
