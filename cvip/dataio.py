@@ -102,6 +102,7 @@ def imwrite(imgPath, img, colmap = None):
                 img = colmap(imggray) * 255
         return cv2.imwrite(imgPath, img)
 
+#TODO write function to save pfm format
 
 def imwrite32f(imgPath, img):
     """
