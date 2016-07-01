@@ -1,6 +1,7 @@
 import cv2
 import numpy
-
+import array
+import os
 
 def opencv2matplotlib(img):
     """
@@ -21,14 +22,43 @@ def imread(imgPath):
         \return : is float
         \return : matrix values
     """
-    ## Read the png image
-    img = cv2.imread(imgPath, -1)
-    if img is None:
+
+    # Check if file exists
+    if not os.path.exists(imgPath):
         raise IOError('File not found: %s' % imgPath)
-    if (img.ndim > 2) and (img.shape[2] == 4):
-        return imread32f(imgPath), 1
-    else:
-        return img, 0
+
+    # Read image
+    if imgPath.endswith('pfm'):
+        # pfm image
+        img = imreadpfm(imgPath)
+        return img, 1
+    elif imgPath.endswith('png'):
+        # png image
+        img = cv2.imread(imgPath, -1)
+
+        if (img.ndim > 2) and (img.shape[2] == 4):
+            # float
+            return imread32f(imgPath), 1
+        else:
+            # char
+            return img, 0
+
+
+def imreadpfm(imgPath):
+    """
+    Load a float mat stored in a pfm file
+        \param imgPath : path to the .pfm image
+        \return : matrix values
+    """
+    with open(imgPath) as fid:
+        line = fid.readline()
+        colsrows = fid.readline().split()
+        cols = int(colsrows[0])
+        rows = int(colsrows[1])
+        scale = fid.readline()
+        elem = array.array('f', fid.read()).tolist()
+        img = numpy.rot90(numpy.asarray(elem, dtype = numpy.float32).reshape((cols, rows), order = 'F'))
+        return img
 
 
 def imread32f(imgPath):
@@ -89,4 +119,10 @@ def imwrite32f(imgPath, img):
 
 
 if __name__ == '__main__':
-    print 'done'
+
+    img = imread('/Data/0_Dataset/middlebury2014/F/Mask-perfect/disp1.pfm')[0]
+
+    import matplotlib.pyplot as plt
+    plt.imshow(img)
+    plt.colorbar()
+    plt.show()
