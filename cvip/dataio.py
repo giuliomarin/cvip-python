@@ -41,7 +41,7 @@ def imread(imgPath):
             return imread32f(imgPath), 1
         else:
             # char
-            return img, 0
+            return opencv2matplotlib(img), 0
 
 
 def imreadpfm(imgPath):
