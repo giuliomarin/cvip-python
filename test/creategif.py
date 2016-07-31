@@ -1,6 +1,17 @@
 from moviepy.editor import *
 import os
 
+# Create gif from list of images
+if True:
+    for id in range(1,7):
+        images = ['/Volumes/AlgoShared/Giulio/cr/CommonTools/0/imaginone_%d.png' % id,
+                    '/Volumes/AlgoShared/Giulio/cr/CommonTools/1/imaginone_%d.png' % id]
+
+        clip = ImageSequenceClip(images, fps = 2)
+        # clip.crop(x1=400, x2=1100, y1=500, y2 = 1000)
+        clip = clip.resize(1.0 / 5.0)
+        clip.write_gif('./gif%d.gif' % id)
+
 # Create gif for Aquifi videos
 if False:
     mainfolder = '/Users/giulio/Dropbox (Aquifi)/Data/ScanGtRegTestData/%s'
