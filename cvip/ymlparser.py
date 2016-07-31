@@ -28,6 +28,10 @@ def prepareStringForReading(ymlFilePath):
         \param ymlFilePath, path to the yml file to parse
         \return strToRead, string to read
     """
+
+    # Add opencv yaml constructor
+    yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", opencvMatrixConstructor)
+
     # read the file in lines
     lines = readLines(ymlFilePath)
         
@@ -338,10 +342,11 @@ def readMatrix(yamlFilePath, node, isThereHeader = True):
 
 if __name__ == "__main__":
 
-    ymlFilePath = '/GitHub/Fusion/apps/computestereo/data/ParametersFile.yml'
-    ymlFilePathOut = '/GitHub/Fusion/apps/computestereo/data/ParamsFile.yml'
-    nodePath = ['global', 'min_disparity']
-    newValue = 0
-    replaceNodePathValue(ymlFilePath, nodePath, newValue, ymlFilePathOut)
-    print 'Done'
-    pass
+    if False:
+        ymlFilePath = '/GitHub/Fusion/apps/computestereo/data/ParametersFile.yml'
+        ymlFilePathOut = '/GitHub/Fusion/apps/computestereo/data/ParamsFile.yml'
+        nodePath = ['global', 'min_disparity']
+        newValue = 0
+        replaceNodePathValue(ymlFilePath, nodePath, newValue, ymlFilePathOut)
+        print 'Done'
+        pass
