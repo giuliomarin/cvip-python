@@ -2,7 +2,7 @@ from moviepy.editor import *
 import os
 
 # Create gif from list of images
-if True:
+if False:
     for id in range(1,7):
         images = ['/Volumes/AlgoShared/Giulio/cr/CommonTools/0/imaginone_%d.png' % id,
                     '/Volumes/AlgoShared/Giulio/cr/CommonTools/1/imaginone_%d.png' % id]
@@ -13,18 +13,24 @@ if True:
         clip.write_gif('./gif%d.gif' % id)
 
 # Create gif for Aquifi videos
-if False:
-    mainfolder = '/Users/giulio/Dropbox (Aquifi)/Data/ScanGtRegTestData/%s'
+if True:
+    mainfolder = '/Volumes/RegressionTesting/Video4RegTest/VideosCloud/%s'
+    outfolder = '/Data/tmp/videogif'
+    if not os.path.exists(outfolder):
+        os.mkdir(outfolder)
     for folder in os.listdir(mainfolder % ''):
-        if os.path.isfile(mainfolder % folder):
+        if os.path.isfile(mainfolder % folder) or (not folder.lower().startswith('scan')):
+            print 'Skipping %s' % folder
             continue
 
+        print 'Creating gif for %s' % folder
         inPath = mainfolder % folder + '/Frames/%s'
         if not os.path.exists(inPath % ''):
             inPath = mainfolder % folder + '/sir/Frames/%s'
         imgpath = inPath % 'color0_%d.png'
 
-        if os.path.exists(inPath % '../gif.gif'):
+        outgifname = outfolder + '/%s.gif' % folder
+        if os.path.exists(outgifname):
             continue
 
         nframes = len([name for name in os.listdir(inPath % '') if os.path.isfile(inPath % name) and name.startswith('color0')])
@@ -37,4 +43,4 @@ if False:
         clip = ImageSequenceClip(images, fps=15)
         # clip.crop(x1=400, x2=1100, y1=500, y2 = 1000)
         clip = clip.resize(1.0 / 6.0)
-        clip.write_gif(inPath % '../gif.gif')
+        clip.write_gif(outgifname)
