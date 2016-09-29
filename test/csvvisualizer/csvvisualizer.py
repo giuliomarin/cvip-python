@@ -8,7 +8,7 @@ import sys
 if len(sys.argv) > 1:
     pathcsv = sys.argv[1]
 else:
-    pathcsv = '/Users/giulio/Dropbox (Personal)/Giulio/Education/4_PhD/Publications/publications.csv'
+    pathcsv = '/Users/giulio/Dropbox (Personal)/Giulio/Education/7_Publications/publications.csv'
 
 csvdata = []
 
