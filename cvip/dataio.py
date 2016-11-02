@@ -32,7 +32,7 @@ def imread(imgPath):
         # pfm image
         img = imreadpfm(imgPath)
         return img, 1
-    elif imgPath.endswith('png'):
+    else:
         # png image
         img = cv2.imread(imgPath, -1)
 
@@ -104,6 +104,48 @@ def imwrite(imgPath, img, colmap = None):
 
 #TODO write function to save pfm format
 
+def png2pgm(pathImgIn, maxVal = 2**16, scale = 1.):
+    img, isfloat = imread(pathImgIn)
+
+    # Check input
+    maxVal = min(maxVal, 2**16)
+    maxVal = float(maxVal)
+    scale = float(scale)
+
+    # img[numpy.isinf(img)] = 0
+
+    # Scale
+    img = img * scale
+
+    # Crop
+    img = numpy.minimum(img, maxVal)
+
+    # Convert if float
+    if isfloat:
+        img = numpy.asarray(img, numpy.int16)
+
+    return img
+
+def png2ppm(pathImgIn, maxVal = 2**16, scale = 1.):
+    img, isfloat = imread(pathImgIn)
+
+    # Check input
+    maxVal = min(maxVal, 2**16)
+    maxVal = float(maxVal)
+    scale = float(scale)
+
+    # Scale
+    img = img * scale
+
+    # Crop
+    img = numpy.minimum(img, maxVal)
+
+    # Convert if float
+    if isfloat:
+        img = numpy.asarray(img, numpy.int16)
+
+    return img
+
 def imwrite32f(imgPath, img):
     """
     Write a float matrix in a png file
@@ -120,9 +162,14 @@ def imwrite32f(imgPath, img):
 
 
 if __name__ == '__main__':
-
-    img = imread('/Data/0_Dataset/middlebury2014/F/Mask-perfect/disp1.pfm')[0]
-
+    img = cv2.imread('/Users/giulio/Desktop/DeepFusion/DATASET/gt/gt_0.pgm')
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = numpy.asarray(img, numpy.float)
+    # img2 = numpy.asarray(imread('/Users/giulio/Desktop/DeepFusion/DATASET/disparity/disparity_0.pgm')[0], float)
+    img2 = numpy.asarray(imread('/Users/giulio/Desktop/DeepFusion/DATASET/tof/tof_0.pgm')[0], numpy.float)
+    diffimg = numpy.abs(img - img2)
+    img = diffimg
+    img[img>2] = 2
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()
