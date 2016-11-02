@@ -7,8 +7,8 @@ import sys
 # Parameters
 #########################
 
-imgfilebase = '/Users/giulio/Library/Application Support/Aquifi/1/%s'
-imgfile = imgfilebase % 'img0_*.png'
+imgfilebase = '/GitHub/sampledata/calibration/%s'
+imgfile = imgfilebase % 'img0_1.png'
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
 
 # Visualization
@@ -85,7 +85,7 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 60, 0.01)
 # Prepare object points
 objp = np.zeros((np.prod(N_CHECKERS), 3), np.float32)
 objp[:, :2] = np.mgrid[0:N_CHECKERS[0], 0:N_CHECKERS[1]].T.reshape(-1, 2)
-objp *= 20.0;
+objp *= 20.0
 
 axis = 20.0 * np.float32([[1,0,0], [0,1,0], [0,0,-1]]).reshape(-1,3)
 

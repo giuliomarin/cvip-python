@@ -12,9 +12,9 @@ from cvip import *
 # Parameters
 #########################
 
-imgfilebase = '/Users/giulio/Library/Application Support/Aquifi/3/%s'
+imgfilebase = '/GitHub/Nitrogen_Build/bin/RelWithDebInfo/calib_test/%s'
 imgfile_l = imgfilebase % 'img2_*.png'
-imgfile_r = imgfilebase % 'img0_*.png'
+imgfile_r = imgfilebase % 'img1_*.png'
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
 SIZE_CHECKERS = 20.0  # mm
 
@@ -129,6 +129,7 @@ def getimage(imgpath):
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         else:
             gray = img
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     return img, gray
 
 
@@ -230,8 +231,7 @@ newsize = (640, 480)
 # Load images
 images = [glob.glob(imgfile_l), glob.glob(imgfile_r)]
 
-if False:
-
+if True:
     if len(images) == 0:
         sys.exit('No image matches: %s' % imgfilebase)
 
@@ -316,7 +316,9 @@ if False:
 K_l, D_l, K_r, D_r, R, T = loadcalib(imgfilebase % 'calib.txt')
 
 # Rectification
-R_l, R_r, P_l, P_r, _, _, _ = cv2.stereoRectify(K_l, D_l, K_r, D_r, newsize, R, T, flags = cv2.CALIB_ZERO_DISPARITY)
+R_l, R_r, P_l, P_r, _, _, _ = cv2.stereoRectify(K_l, D_l, K_r, D_r, newsize, R, T, flags = cv2.CALIB_ZERO_DISPARITY, alpha = 0)
+
+print 'P_l:\n%s\nP_r:\n%s' % (tostr(P_l, 2), tostr(P_r, 2))
 
 rectMap = [[[], []], [[], []]]
 rectMap[0][0], rectMap[0][1] = cv2.initUndistortRectifyMap(K_l, D_l, R_l, P_l, newsize, cv2.CV_16SC2)
@@ -326,8 +328,8 @@ idx = randrange(len(images[0]))
 img_l, gray_l = getimage(images[0][idx])
 img_r, gray_r = getimage(images[1][idx])
 
-img_l, gray_l = getimage('/Users/giulio/Library/Application Support/Aquifi/2/img1_1.png')
-img_r, gray_r = getimage('/Users/giulio/Library/Application Support/Aquifi/2/img0_1.png')
+img_l, gray_l = getimage(imgfilebase % 'img2_1.png')
+img_r, gray_r = getimage(imgfilebase % 'img1_1.png')
 
 imgRect_l = cv2.remap(img_l, rectMap[0][0], rectMap[0][1], cv2.INTER_CUBIC)
 imgRect_r = cv2.remap(img_r, rectMap[1][0], rectMap[1][1], cv2.INTER_CUBIC)
@@ -340,8 +342,8 @@ lines = [((0, int(r)), (imgtoshow.shape[1], int(r)), (uniform(0,255), uniform(0,
 for pt in lines:
     cv2.line(imgtoshow, pt[0], pt[1], pt[2], 1)
 
-cv2.imwrite('/Users/giulio/Library/Application Support/Aquifi/2/imgrect1_1.png', imgRect_l)
-cv2.imwrite('/Users/giulio/Library/Application Support/Aquifi/2/imgrect0_1.png', imgRect_r)
+cv2.imwrite(imgfilebase % 'rectimg2_1.png', imgRect_l)
+cv2.imwrite(imgfilebase % 'rectimg1_1.png', imgRect_r)
 
 cv2.imshow('curr img', imgtoshow)
 cv2.waitKey(0)

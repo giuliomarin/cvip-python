@@ -64,6 +64,7 @@ imgPoints = []  # 2d points in image plane.
 n_valid = 0
 
 # Convergence criteria
+# TODO: check this!!!! I think the numbers are inverted
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 60, 0.01)
 
 # Loop on images
