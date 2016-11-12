@@ -104,47 +104,29 @@ def imwrite(imgPath, img, colmap = None):
 
 #TODO write function to save pfm format
 
-def png2pgm(pathImgIn, maxVal = 2**16, scale = 1.):
+def png2pgm(pathImgIn, minVal = 0, maxVal = 255):
     img, isfloat = imread(pathImgIn)
 
-    # Check input
-    maxVal = min(maxVal, 2**16)
-    maxVal = float(maxVal)
-    scale = float(scale)
+    img = numpy.asarray(img, numpy.float32)
 
-    # img[numpy.isinf(img)] = 0
+    # Check input
+    minVal = max(minVal, 0)
+    minVal = float(minVal)
+    maxVal = min(maxVal, 2 ** 16)
+    maxVal = float(maxVal)
+
+    img[img < 0] = 0
 
     # Scale
-    img = img * scale
+    img = img - minVal
+    img = img / (maxVal - minVal)
+    img = img * (2 ** 16)
 
-    # Crop
-    img = numpy.minimum(img, maxVal)
-
-    # Convert if float
-    if isfloat:
-        img = numpy.asarray(img, numpy.int16)
+    # Convert to int
+    img = numpy.asarray(img, numpy.uint16)
 
     return img
 
-def png2ppm(pathImgIn, maxVal = 2**16, scale = 1.):
-    img, isfloat = imread(pathImgIn)
-
-    # Check input
-    maxVal = min(maxVal, 2**16)
-    maxVal = float(maxVal)
-    scale = float(scale)
-
-    # Scale
-    img = img * scale
-
-    # Crop
-    img = numpy.minimum(img, maxVal)
-
-    # Convert if float
-    if isfloat:
-        img = numpy.asarray(img, numpy.int16)
-
-    return img
 
 def imwrite32f(imgPath, img):
     """
@@ -162,14 +144,10 @@ def imwrite32f(imgPath, img):
 
 
 if __name__ == '__main__':
-    img = cv2.imread('/Users/giulio/Desktop/DeepFusion/DATASET/gt/gt_0.pgm')
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = numpy.asarray(img, numpy.float)
-    # img2 = numpy.asarray(imread('/Users/giulio/Desktop/DeepFusion/DATASET/disparity/disparity_0.pgm')[0], float)
-    img2 = numpy.asarray(imread('/Users/giulio/Desktop/DeepFusion/DATASET/tof/tof_0.pgm')[0], numpy.float)
-    diffimg = numpy.abs(img - img2)
-    img = diffimg
-    img[img>2] = 2
+    import sys
+    # img = imread(sys.argv[1])[0]
+    img = imread('/Users/giulio/Desktop/trino_synth/synth_noise2/stereo_d/stereo_d_0.pgm')[0].astype(numpy.float32)
+    img = img / (2**16) * 224
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()
