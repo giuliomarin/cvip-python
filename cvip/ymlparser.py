@@ -350,3 +350,8 @@ if __name__ == "__main__":
         replaceNodePathValue(ymlFilePath, nodePath, newValue, ymlFilePathOut)
         print 'Done'
         pass
+    if True:
+        calibPath = r'/GitHub/Nitrogen_Build/bin/RelWithDebInfo/calib.yml'
+        a = getInfoFromNodePath(calibPath, ['camera_calibrations', 'camera_0'])
+        print a
+        pass
