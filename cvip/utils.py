@@ -8,7 +8,7 @@ import cv2
 import os
 
 
-def plotcam(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0):
+def plotcam(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0, f = 7.0):
     """
         Plot a camera with a given pose. Camera looks at z.
             \param ax : handle to the axes
@@ -17,11 +17,8 @@ def plotcam(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0):
             \param col: color of the camera
             \param scale: size of the camera
     """
-    f = 7.0
-    h = 3.0
-    w = 4.0
+
     pp = np.array([[0, 0, 0], [w/2, -h/2, f], [w/2, h/2, f], [-w/2, h/2, f], [-w/2, -h/2, f]]).transpose()
-    pp /= np.max(pp)
     pp *= scale
     pw = np.asarray(r).dot(pp) + np.asmatrix(t).transpose()
     pw = pw.transpose().tolist()
@@ -155,7 +152,7 @@ def alignimage(ref, img):
         warp_matrix = np.eye(2, 3, dtype = np.float32)
 
     # Specify the number of iterations.
-    number_of_iterations = 1000
+    number_of_iterations = 100
 
     # Specify the threshold of the increment
     # in the correlation coefficient between two iterations
@@ -179,6 +176,27 @@ def alignimage(ref, img):
 
     return im2_aligned
 
+def resizeimgh(img, h):
+    if h <= 0:
+        return img
+    else:
+        return cv2.resize(img, (int(float(img.shape[1]) / img.shape[0] * h), h))
+
+
+def resizeimgw(img, w):
+    if w <= 0:
+        return img
+    else:
+        return cv2.resize(img, (w, int(float(img.shape[0]) / img.shape[1] * w)))
+
+
+def tostr(arr, prec = 3):
+    strout = ''
+    for l in arr:
+        for c in l:
+            strout += ('%.' + str(prec) + 'f ') % c
+        strout += '\n'
+    return strout
 
 if __name__ == '__main__':
 
@@ -193,7 +211,7 @@ if __name__ == '__main__':
         mergeimages(['../../samples/images/left.png', '../../samples/images/right.png'], 2, 0.2, '../../samples/images/merge.png')
 
     # Test plot camera
-    if False:
+    if True:
         fig = plt.figure('camera')
         ax = Axes3D(fig)
 
