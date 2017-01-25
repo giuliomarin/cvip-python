@@ -1,0 +1,55 @@
+size 640 480
+output test.png
+
+camera 10 10 -25 0 0 0 0 1 0 60
+
+attenuation 1 0.0 0.001
+point -5 10 -20 1 1 1
+
+#maxverts 4
+
+#vertex 10 0 10
+#vertex 10 0 -10
+#vertex -10 0 -10
+#vertex -10 0 10
+
+pushTransform
+
+ambient 0.1 0.1 0.1
+diffuse 0.8 0.8 0.8
+shininess 40
+emission 0 0 0
+specular .8 .8 .8
+
+checkerboard 0 0 0 0 0 1 1 0 0
+#tri 0 1 2
+#tri 2 3 0
+
+popTransform
+pushTransform
+
+# Now draw the spheres
+specular 0.5 0.5 0.5
+
+ambient 0.1 0.1 0.2
+diffuse 0.1 0.1 0.8
+translate  -10 5 0
+sphere 0 0 0 5
+
+popTransform
+pushTransform
+
+ambient 0.1 0.2 0.1
+diffuse 0.1 0.8 0.1
+translate  15 5 10
+sphere 0 0 0 5
+
+popTransform
+pushTransform
+
+specular 0.0 0.0 0.0
+ambient 0.2 0.1 0.1
+diffuse 0.8 0.3 0.1
+translate  0 5 5
+sphere 0 0 0 5
+popTransform
