@@ -65,7 +65,12 @@ def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):
             continue
         if img is None:
             continue
-        imgRows, imgCols, imgChannels = img.shape
+        imgshape = img.shape
+        if len(imgshape) > 2:
+            imgRows, imgCols, imgChannels = imgshape
+        else:
+            imgChannels = 1
+            imgRows, imgCols = imgshape
 
         # Assign global values
         if imgNum == 0:
@@ -208,7 +213,7 @@ if __name__ == '__main__':
         #     return [int(text) if text.isdigit() else text.lower() for text in re.split(re.compile('([0-9]+)'), s)]
         # imagesList.sort(key = _natural_sort_key)
 
-        mergeimages(['../../samples/images/left.png', '../../samples/images/right.png'], 2, 0.2, '../../samples/images/merge.png')
+        mergeimages(['../unittests/rgb.png', '../unittests/rgb.png'], 2, 0.2, '../unittests/merge.png')
 
     # Test plot camera
     if True:

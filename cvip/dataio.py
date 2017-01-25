@@ -145,9 +145,7 @@ def imwrite32f(imgPath, img):
 
 if __name__ == '__main__':
     import sys
-    # img = imread(sys.argv[1])[0]
-    img = imread('/Users/giulio/Desktop/trino_synth/synth_noise2/stereo_d/stereo_d_0.pgm')[0].astype(numpy.float32)
-    img = img / (2**16) * 224
+    img = imread(sys.argv[1])[0]
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()

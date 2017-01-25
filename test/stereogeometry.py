@@ -74,7 +74,7 @@ for l in plt.gca().lines:
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth = LINE_W)
 plt.show()
-# plt.savefig('/Users/giulio/Desktop/commonfov.png', transparent = True)
+# plt.savefig('commonfov.png', transparent = True)
 
 ######################
 # Depth resolution
@@ -99,7 +99,7 @@ for l in plt.gca().lines:
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth = LINE_W)
 plt.show()
-# plt.savefig('/Users/giulio/Desktop/depthres.png', transparent = True)
+# plt.savefig('depthres.png', transparent = True)
 
 ######################
 # Disparity vs Depth
@@ -123,7 +123,7 @@ for l in plt.gca().lines:
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth = LINE_W)
 plt.show()
-# plt.savefig('/Users/giulio/Desktop/disparitydepth.png', transparent = True)
+# plt.savefig('disparitydepth.png', transparent = True)
 
 plt.ioff()
 plt.show()
