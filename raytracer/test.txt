@@ -1,7 +1,7 @@
-size 640 480
+size 320 240
 output test.png
 
-camera 10 10 -25 0 0 0 0 1 0 60
+camera 5 10 -25 0 0 0 0 1 0 60
 
 attenuation 1 0.0 0.001
 point -5 10 -20 1 1 1
