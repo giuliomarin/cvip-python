@@ -76,7 +76,7 @@ for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
           'r  = %+.1f deg  --  t  = %+.1f mm\n\n' % (camera, fx, fx / K1[0, 0] * 100., fy, fy / K1[1, 1] * 100., cx, cx / K1[0, 2] * 100., cy, cy / K1[1, 2] * 100., np.rad2deg(angle), np.linalg.norm(T))
     print res
 
-    plt.figure()
+    plt.figure(camera)
     plt.imshow(mapDiff)
     plt.colorbar()
     plt.set_cmap('Reds')
