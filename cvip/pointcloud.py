@@ -57,3 +57,9 @@ def addColor(data, color):
         # all the points with the same color
         data = numpy.concatenate([data, numpy.full(data.shape, color, dtype=numpy.float32)], axis=1)
     return data
+
+def checkPC(filename):
+    pass
+
+if __name__ == '__main__':
+    checkPC('/GitHub/build/Nitrogen/bin/Debug/1.ply')

@@ -2,7 +2,15 @@ from moviepy.editor import *
 import os
 
 # Create gif from list of images
-if False:
+if 1:
+    images = ['/Data/1.png',
+              '/Data/2.png']
+
+    clip = ImageSequenceClip(images, fps=2)
+    # clip.crop(x1=400, x2=1100, y1=500, y2 = 1000)
+    # clip = clip.resize(1.0 / 5.0)
+    clip.write_gif('/Data/gif.gif')
+if 0:
     for id in range(1,7):
         images = ['/Volumes/AlgoShared/Giulio/cr/CommonTools/0/imaginone_%d.png' % id,
                     '/Volumes/AlgoShared/Giulio/cr/CommonTools/1/imaginone_%d.png' % id]
@@ -13,7 +21,7 @@ if False:
         clip.write_gif('./gif%d.gif' % id)
 
 # Create gif for Aquifi videos
-if True:
+if 0:
     mainfolder = '/Volumes/RegressionTesting/Video4RegTest/VideosCloud/%s'
     outfolder = '/Data/tmp/videogif'
     if not os.path.exists(outfolder):

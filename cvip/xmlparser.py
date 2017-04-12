@@ -1,12 +1,13 @@
 import numpy
 from xml.etree import ElementTree
 
-# node = xml.etree.ElementTree.parse(filepath)
+# Usage: node = parse(filepath)
 def getmat(node, elements = []):
     if len(elements) > 0:
         for e in elements:
             node = node.find(e)
 
+    # Add more cases
     if node.get('type_id') != 'opencv-matrix':
         return node.text
     r = int(node.find('rows').text)

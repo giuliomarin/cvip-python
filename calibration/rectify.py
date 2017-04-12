@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import sys
 from random import uniform, randrange
-from cvip import utils, ymlparser, dataio
+from cvip import utils, ymlparser, xmlparser, dataio
 
 sys.path.append('/GitHub/cvip/python')
 
@@ -10,13 +10,22 @@ sys.path.append('/GitHub/cvip/python')
 # Parameters
 #########################
 
-calibPath = r'/Users/giulio/Desktop/collection_20161002/out/calib_all.yml'
-s = 2
-imgpath1 = '/Users/giulio/Desktop/collection_20161002/out/calib2/%d/img_r1_s1_1.png' % s
-imgpath2 = '/Users/giulio/Desktop/collection_20161002/out/calib2/%d/img_r1_s1_2.png' % s
+# calibPath = r'/Users/giulio/Downloads/calib2cameraRect.xml'
+# calibPath = r'/Users/giulio/Downloads/calib445.xml'
+calibPath = r'/GitHub/build/Nitrogen/bin/Debug/calib.xml'
+s = 1
+cameras = ['master', 'slave', 'color0']
+c1 = 0
+c2 = 1
+imgpath = '/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_Scanner/CBWall/01_27_2017/30_Q_50C_00078_CBWall_20170130-173111/DataCBWall/500/Frames/%s_1.png'
+imgpath = '/Data/3_calibration/30_Q_50C_00078/%s_1.png'
+imgpath1 = imgpath % cameras[c1]
+imgpath2 = imgpath % cameras[c2]
+# imgpath1 = '/Users/giulio/Desktop/collection_20161002/out/scene%d/exp2/img_r1_s4_10.png' % s
+# imgpath2 = '/Users/giulio/Desktop/collection_20161002/out/scene%d/exp2/img_r1_s4_11.png' % s
 
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
-SIZE_CHECKERS = 20.0  # mm
+SIZE_CHECKERS = 50.0  # mm
 
 # Visualization
 H_IMGS = 400  # -1 for original size
@@ -37,33 +46,52 @@ def getimage(imgpath):
     img, isfloat = dataio.imread(imgpath)
     if isfloat:
         gray = getoptimalimg(img)
-        img = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+        img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
     else:
         if len(img.shape) > 2:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         else:
             gray = img
-            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    img = dataio.opencv2matplotlib(img)
     return img, gray
 
 ##########################
 # Calibration
 ##########################
 
-calib = ymlparser.parse(calibPath)
-c = 0
-K_l = calib['camera_calibrations']['camera_%d' % c]['K']
-D_l = calib['camera_calibrations']['camera_%d' % c]['D']
-R_l = calib['camera_calibrations']['camera_%d' % c]['R']
-T_l = calib['camera_calibrations']['camera_%d' % c]['T']
-res_l = calib['camera_calibrations']['camera_%d' % c]['resolution']
+if True:
+    calib = xmlparser.parse(calibPath)
+    cam = 'camera_%d' % c1
+    K_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'K'])
+    D_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'D'])
+    R_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'R'])
+    T_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'T'])
+    res_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
+    res_l[0] = int(res_l[0])
+    res_l[1] = int(res_l[1])
+    cam = 'camera_%d' % c2
+    K_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'K'])
+    D_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'D'])
+    R_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'R'])
+    T_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'T'])
+    res_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
+    res_r[0] = int(res_r[0])
+    res_r[1] = int(res_r[1])
 
-c = 1
-K_r = calib['camera_calibrations']['camera_%d' % c]['K']
-D_r = calib['camera_calibrations']['camera_%d' % c]['D']
-R_r = calib['camera_calibrations']['camera_%d' % c]['R']
-T_r = calib['camera_calibrations']['camera_%d' % c]['T']
-res_r = calib['camera_calibrations']['camera_%d' % c]['resolution']
+else:
+    calib = ymlparser.parse(calibPath)
+    K_l = calib['camera_calibrations']['camera_%d' % c1]['K']
+    D_l = calib['camera_calibrations']['camera_%d' % c1]['D']
+    R_l = calib['camera_calibrations']['camera_%d' % c1]['R']
+    T_l = calib['camera_calibrations']['camera_%d' % c1]['T']
+    res_l = calib['camera_calibrations']['camera_%d' % c1]['resolution']
+
+    K_r = calib['camera_calibrations']['camera_%d' % c2]['K']
+    D_r = calib['camera_calibrations']['camera_%d' % c2]['D']
+    R_r = calib['camera_calibrations']['camera_%d' % c2]['R']
+    T_r = calib['camera_calibrations']['camera_%d' % c2]['T']
+    res_r = calib['camera_calibrations']['camera_%d' % c2]['resolution']
 
 # Compute relative transformation
 R = R_r.dot(np.linalg.inv(R_l))
@@ -72,6 +100,11 @@ T = -R_r.dot(np.linalg.inv(R_l).dot(T_l)) + T_r
 # Rectification
 newsize = tuple(res_l)
 R_l, R_r, P_l, P_r, _, _, _ = cv2.stereoRectify(K_l, D_l, K_r, D_r, newsize, R, T, flags = cv2.CALIB_ZERO_DISPARITY, alpha = 0)
+
+print R_l
+print
+print P_l
+print P_r
 
 rectMap = [[[], []], [[], []]]
 rectMap[0][0], rectMap[0][1] = cv2.initUndistortRectifyMap(K_l, D_l, R_l, P_l, newsize, cv2.CV_16SC2)
@@ -97,8 +130,9 @@ for pt in lines:
 
 # imgtoshow = np.vstack((imgorig, imgtoshow))
 
-# cv2.imwrite(imgfilebase % 'rectimg2_1.png', imgRect_l)
-# cv2.imwrite(imgfilebase % 'rectimg1_1.png', imgRect_r)
+# imgpathout = '/Users/giulio/Desktop/stereo/%s.png'
+# dataio.imwrite(imgpathout % ('%d_l' % s), imgRect_l)
+# dataio.imwrite(imgpathout % ('%d_r' % s), imgRect_r)
 # cv2.imwrite('rect.png', imgtoshow)
 cv2.imshow('orig', imgorig)
 cv2.imshow('rect', imgtoshow)

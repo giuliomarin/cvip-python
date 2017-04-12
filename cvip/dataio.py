@@ -19,8 +19,8 @@ def imread(imgPath):
     """
     Load a char/float mat stored in a png file
         \param imgPath : path to the .png image
-        \return : is float
         \return : matrix values
+        \return : is float
     """
 
     # Check if file exists
@@ -145,8 +145,25 @@ def imwrite32f(imgPath, img):
 
 if __name__ == '__main__':
     import sys
-    img = imread(sys.argv[1])[0]
+    img = imread('/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_Scanner/WallTests/01_27_2017/FlatWall_30_Q_50C_00075_20170204-015805/DataFlatWall/1000/Depth/depth_1.png')[0]
+    # img = 1/img * 600 * 50
+    # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/19/sir/Prefilter/slavePre_1.png')[0]
+    # img2 = imread('/GitHub/CommonTools/submodules/Nitrogen/30/sir/Prefilter/slavePre_1.png')[0]
+    # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23_1thread/sir/Prefilter/masterPre_1.png')[0]
+    # img2 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23/sir/Prefilter/masterPre_1.png')[0]
+    # imgorig = img.copy()
+    # cmin = 20
+    # cmax = 50
+    # img[cmin > imgorig] = numpy.nan
+    # img[cmax < imgorig] = numpy.nan
+    # img[0,0] = cmin
+    # img[0,1] = cmax
+    # img = numpy.abs(img1.astype(float) - img2.astype(float))
+    # print numpy.sum(img)
+    # img = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/31/sir/Disparity/disparity_1.png')[0]
+    # img = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot17/sir/Disparity/disparity_2.png')[0]
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()
+    plt.imsave("disp1.png", img, cmap='Greys')
     plt.show()

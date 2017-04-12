@@ -100,7 +100,9 @@ def createImagesc(img):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.argv.append('/Users/giulio/Library/Application Support/Aquifi/2/img2_1.png')
+        sys.argv.append('/GitHub/build/Nitrogen/bin/Debug/dispAvg.png')
+
+    print 'Keypress:\n[space] to save\n[ESC] to quit'
 
     imgPath = sys.argv[1]
     img = cvip.dataio.imread32f(imgPath)
