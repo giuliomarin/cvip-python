@@ -229,7 +229,7 @@ def loadcalib(calibpath):
 
 newsize = (640, 480)
 # Load images
-images = [glob.glob(imgfile_l), glob.glob(imgfile_r)]
+images = [sorted(glob.glob(imgfile_l)), sorted(glob.glob(imgfile_r))]
 
 if True:
     if len(images) == 0:
@@ -328,8 +328,8 @@ idx = randrange(len(images[0]))
 img_l, gray_l = getimage(images[0][idx])
 img_r, gray_r = getimage(images[1][idx])
 
-img_l, gray_l = getimage(imgfilebase % 'img2_1.png')
-img_r, gray_r = getimage(imgfilebase % 'img1_1.png')
+img_l, gray_l = getimage(imgfile_l.replace('*', '1'))
+img_r, gray_r = getimage(imgfile_r.replace('*', '1'))
 
 imgRect_l = cv2.remap(img_l, rectMap[0][0], rectMap[0][1], cv2.INTER_CUBIC)
 imgRect_r = cv2.remap(img_r, rectMap[1][0], rectMap[1][1], cv2.INTER_CUBIC)
