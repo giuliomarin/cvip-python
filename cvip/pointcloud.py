@@ -62,4 +62,7 @@ def checkPC(filename):
     pass
 
 if __name__ == '__main__':
-    checkPC('/GitHub/build/Nitrogen/bin/Debug/1.ply')
+    xyz = generatePlane(0, 0, 1, 0)
+    saveply('/GitHub/sampledata/3dmodels/plane.ply', xyz)
+    exit(0)
+    checkPC('/GitHub/sampledata/3dmodels/rubik.ply')

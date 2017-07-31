@@ -22,16 +22,15 @@ def showimages(img1, img2, pathtosave):
 
     axcolor = 'lightgoldenrodyellow'
     BAR_HEIGHT = 0.03
-    axalpha = plt.axes([0.2, 0.2 * BAR_HEIGHT, 0.7, BAR_HEIGHT], axisbg = axcolor)
+    axalpha = plt.axes([0.2, 0.2 * BAR_HEIGHT, 0.7, BAR_HEIGHT], facecolor=axcolor)
     # axmax = plt.axes([0.2, BAR_HEIGHT + 0.4 * BAR_HEIGHT, 0.7, BAR_HEIGHT], axisbg = axcolor)
     salpha = Slider(axalpha, 'Alpha', 0.0, 1.0, valinit = 1.0)
 
     def update(event):
         curralpha = salpha.val
-        ax.hold(False)
-        ax.imshow(img1, alpha = curralpha)
-        ax.hold(True)
-        ax.imshow(img2, alpha = 1 - curralpha)
+        ax.clear()
+        ax.imshow(img1, alpha=curralpha)
+        ax.imshow(img2, alpha=(1 - curralpha))
         plt.draw()
         return curralpha
     salpha.on_changed(update)

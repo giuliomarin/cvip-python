@@ -57,7 +57,7 @@ def checkFile(ymlFilePath):
         \return true or false, result of the check
     """
     # try to parse the file
-    try:  
+    try:
         yamlObj = parse(ymlFilePath)
         success = True
     except Exception, e:
@@ -66,7 +66,7 @@ def checkFile(ymlFilePath):
 
     # return
     return success
-      
+
 
 def parse(ymlFilePath):
     """
@@ -316,21 +316,21 @@ def readMatrix(yamlFilePath, node, isThereHeader = True):
         \param isThereHeader: (optional) is the file contain a header or not
         \retrun read matrix
     """
-    
+
     # Check existence
     if not os.path.exists(yamlFilePath):
         raise Exception("File does not exist: " + yamlFilePath)
-    
-    # Add opencv yaml constructor 
+
+    # Add opencv yaml constructor
     yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", opencvMatrixConstructor)
 
-     # Open file 
+     # Open file
     f = open(yamlFilePath, 'r')
     if isThereHeader:
         header = f.readline()
 
     # Load
-    rslt = yaml.load(f) 
+    rslt = yaml.load(f)
 
     # Get the corresponding node
     return rslt[node[0]]

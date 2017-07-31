@@ -222,11 +222,11 @@ if __name__ == '__main__':
 
         # plot camera 1
         r = tf.rotation_matrix(np.deg2rad(0), [0, 0, 1])[:3, :3]
-        plotcam(ax, r, [0, 0, 0], scale = 0.5)
+        plotcam(ax, r, [0, 0, 0], scale=0.05)
 
         # plot camera 2
         r = tf.rotation_matrix(np.deg2rad(90), [1, 0, 0])[:3, :3]
-        plotcam(ax, r, [1, 0, 0], col = [0.2, 0.2, 0.2], scale = 0.5)
+        plotcam(ax, r, [1, 0, 0], col=[0.2, 0.2, 0.2], scale=0.05)
 
         ax.set_xlabel('x')
         ax.set_ylabel('y')
