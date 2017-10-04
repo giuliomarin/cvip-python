@@ -12,9 +12,9 @@ from cvip import *
 # Parameters
 #########################
 
-imgfilebase = '/GitHub/Nitrogen_Build/bin/RelWithDebInfo/calib_test/%s'
-imgfile_l = imgfilebase % 'img2_*.png'
-imgfile_r = imgfilebase % 'img1_*.png'
+imgfilebase = '/Users/giulio/Desktop/out/%s'
+imgfile_l = imgfilebase % 'master_*.png'
+imgfile_r = imgfilebase % 'slave_*.png'
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
 SIZE_CHECKERS = 20.0  # mm
 
@@ -275,7 +275,7 @@ if True:
         imgtoshow_l = resizeimgh(imgtoshow_l, H_IMGS)
         imgtoshow_r = resizeimgh(imgtoshow_r, H_IMGS)
         imgtoshow = np.hstack((imgtoshow_l, imgtoshow_r))
-        if False:
+        if True:
             cv2.imshow('curr img', imgtoshow)
             cv2.waitKey(1)
 
@@ -328,8 +328,8 @@ idx = randrange(len(images[0]))
 img_l, gray_l = getimage(images[0][idx])
 img_r, gray_r = getimage(images[1][idx])
 
-img_l, gray_l = getimage(imgfilebase % 'img2_1.png')
-img_r, gray_r = getimage(imgfilebase % 'img1_1.png')
+img_l, gray_l = getimage(imgfilebase % 'master_1.png')
+img_r, gray_r = getimage(imgfilebase % 'slave_1.png')
 
 imgRect_l = cv2.remap(img_l, rectMap[0][0], rectMap[0][1], cv2.INTER_CUBIC)
 imgRect_r = cv2.remap(img_r, rectMap[1][0], rectMap[1][1], cv2.INTER_CUBIC)

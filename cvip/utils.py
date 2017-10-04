@@ -34,9 +34,9 @@ def plotcam(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0, f = 
     poly.set_color(col)
     ax.add_collection3d(poly)
     coloredaxes = np.asarray([pw[4], pw[1]])
-    ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'r', linewidth = 2.0)  # x
+    ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'r', linewidth=2.0)  # x
     coloredaxes = np.asarray([pw[4], pw[3]])
-    ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'g', linewidth = 2.0)  # y
+    ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'g', linewidth=2.0)  # y
 
 
 def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):

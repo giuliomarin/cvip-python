@@ -88,10 +88,10 @@ def imwrite(imgPath, img, colmap = None):
         \param imgPath : path to the .png image
         \img : image to store
     """
-    if (len(img.shape) > 2) and (img.shape[2] == 4):
+    if img.dtype == numpy.float32:
         return imwrite32f(imgPath, img)
     else:
-        if not colmap is None:
+        if colmap is not None:
             if len(img.shape) < 3:
                 imggray = img.astype(numpy.uint8)
             else:
@@ -145,19 +145,25 @@ def imwrite32f(imgPath, img):
 
 if __name__ == '__main__':
     import sys
-    img = imread('/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_Scanner/WallTests/01_27_2017/FlatWall_30_Q_50C_00075_20170204-015805/DataFlatWall/1000/Depth/depth_1.png')[0]
+    # img = imread('/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_T_Scanner/WallTests/Experiment/FlatWall_21_T_50C_00000_20170725-012014_WCalibStation_test1/DataFlatWall/750/Depth/depth_12.png')[0]
+    img = imread('/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_T_Scanner/WallTests/Experiment/FlatWall_21_T_50C_00000_20170725-012955_AlCalibStation_test1/DataFlatWall/750/Depth/depth_12.png')[0]
+    imgorig = img.copy()
+    img[imgorig < 1] = numpy.nan
+    d = numpy.mean(img[~numpy.isnan(img)])
+    print d
     # img = 1/img * 600 * 50
     # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/19/sir/Prefilter/slavePre_1.png')[0]
     # img2 = imread('/GitHub/CommonTools/submodules/Nitrogen/30/sir/Prefilter/slavePre_1.png')[0]
     # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23_1thread/sir/Prefilter/masterPre_1.png')[0]
     # img2 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23/sir/Prefilter/masterPre_1.png')[0]
-    # imgorig = img.copy()
-    # cmin = 20
-    # cmax = 50
-    # img[cmin > imgorig] = numpy.nan
-    # img[cmax < imgorig] = numpy.nan
-    # img[0,0] = cmin
-    # img[0,1] = cmax
+
+    cmin = d * 0.97
+    cmax = d * 1.03
+    # img[(d - 1 < imgorig) & (imgorig < d + 1)] = numpy.nan
+    img[cmax < imgorig] = numpy.nan
+    img[cmin > imgorig] = numpy.nan
+    img[0,0] = cmin
+    img[0,1] = cmax
     # img = numpy.abs(img1.astype(float) - img2.astype(float))
     # print numpy.sum(img)
     # img = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/31/sir/Disparity/disparity_1.png')[0]
@@ -165,5 +171,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()
-    plt.imsave("disp1.png", img, cmap='Greys')
+    plt.title('Distance: %d' % d)
+    # plt.colorbar()
+    # plt.imsave("disp1.png", img, cmap='Greys')
     plt.show()

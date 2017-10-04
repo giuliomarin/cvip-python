@@ -3,6 +3,7 @@ import cv2
 import sys
 from random import uniform, randrange
 from cvip import utils, ymlparser, xmlparser, dataio
+from matplotlib import pyplot as plt
 
 sys.path.append('/GitHub/cvip/python')
 
@@ -12,23 +13,22 @@ sys.path.append('/GitHub/cvip/python')
 
 # calibPath = r'/Users/giulio/Downloads/calib2cameraRect.xml'
 # calibPath = r'/Users/giulio/Downloads/calib445.xml'
-calibPath = r'/GitHub/build/Nitrogen/bin/Debug/calib.xml'
+calibPath = '/Volumes/AlgoShared/giulio/Snapshot1/sir/CalibrationFile/ctgm020.xml'
 s = 1
 cameras = ['master', 'slave', 'color0']
 c1 = 0
 c2 = 1
-imgpath = '/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_Scanner/CBWall/01_27_2017/30_Q_50C_00078_CBWall_20170130-173111/DataCBWall/500/Frames/%s_1.png'
-imgpath = '/Data/3_calibration/30_Q_50C_00078/%s_1.png'
-imgpath1 = imgpath % cameras[c1]
-imgpath2 = imgpath % cameras[c2]
-# imgpath1 = '/Users/giulio/Desktop/collection_20161002/out/scene%d/exp2/img_r1_s4_10.png' % s
-# imgpath2 = '/Users/giulio/Desktop/collection_20161002/out/scene%d/exp2/img_r1_s4_11.png' % s
+imgpath = '/Users/giulio/Desktop/out/%s_1.png'
+# imgpath1 = imgpath % cameras[c1]
+# imgpath2 = imgpath % cameras[c2]
+imgpath1 = '/Volumes/AlgoShared/giulio/Snapshot1/sir/Frames/master_1.png'
+imgpath2 = '/Volumes/AlgoShared/giulio/Snapshot1/sir/Frames/slave_1.png'
 
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
-SIZE_CHECKERS = 50.0  # mm
+SIZE_CHECKERS = 20.0  # mm
 
 # Visualization
-H_IMGS = 400  # -1 for original size
+H_IMGS = 600  # -1 for original size
 
 #########################
 # Functions
@@ -60,22 +60,22 @@ def getimage(imgpath):
 # Calibration
 ##########################
 
-if True:
+if calibPath.endswith('xml'):
     calib = xmlparser.parse(calibPath)
     cam = 'camera_%d' % c1
-    K_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'K'])
-    D_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'D'])
-    R_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'R'])
-    T_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'T'])
-    res_l = xmlparser.getmat(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
+    K_l = xmlparser.get(calib, ['camera_calibrations', cam, 'K'])
+    D_l = xmlparser.get(calib, ['camera_calibrations', cam, 'D'])
+    R_l = xmlparser.get(calib, ['camera_calibrations', cam, 'R'])
+    T_l = xmlparser.get(calib, ['camera_calibrations', cam, 'T'])
+    res_l = xmlparser.get(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
     res_l[0] = int(res_l[0])
     res_l[1] = int(res_l[1])
     cam = 'camera_%d' % c2
-    K_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'K'])
-    D_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'D'])
-    R_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'R'])
-    T_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'T'])
-    res_r = xmlparser.getmat(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
+    K_r = xmlparser.get(calib, ['camera_calibrations', cam, 'K'])
+    D_r = xmlparser.get(calib, ['camera_calibrations', cam, 'D'])
+    R_r = xmlparser.get(calib, ['camera_calibrations', cam, 'R'])
+    T_r = xmlparser.get(calib, ['camera_calibrations', cam, 'T'])
+    res_r = xmlparser.get(calib, ['camera_calibrations', cam, 'resolution']).strip().split()
     res_r[0] = int(res_r[0])
     res_r[1] = int(res_r[1])
 
@@ -134,6 +134,8 @@ for pt in lines:
 # dataio.imwrite(imgpathout % ('%d_l' % s), imgRect_l)
 # dataio.imwrite(imgpathout % ('%d_r' % s), imgRect_r)
 # cv2.imwrite('rect.png', imgtoshow)
-cv2.imshow('orig', imgorig)
-cv2.imshow('rect', imgtoshow)
-cv2.waitKey(0)
+# cv2.imshow('orig', imgorig)
+# cv2.imshow('rect', imgtoshow)
+plt.imshow(imgtoshow)
+plt._show()
+# cv2.waitKey(0)

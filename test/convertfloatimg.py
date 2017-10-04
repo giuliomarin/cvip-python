@@ -33,6 +33,7 @@ def createImagesc(img):
             plt.imsave(os.path.join(currPath, 'converted.png'), img8bit, cmap = 'gray')
             print 'saved'
 
+    img[img < 0] = 0
     img = np.sqrt(img)
     img /= max(img.flatten())
 
@@ -42,7 +43,7 @@ def createImagesc(img):
     fig_hist, ax_hist = plt.subplots()
     fig_hist.canvas.mpl_connect('key_press_event', press)
     plt.subplots_adjust(0.1, 0.05, 1.0, 0.98)
-    im_hist = plt.hist(img.flatten(), 50, histtype = 'stepfilled', normed = True)
+    im_hist = plt.hist(img.flatten(), 50, histtype='stepfilled', normed = True)
 
     fig, ax = plt.subplots()
     fig.canvas.mpl_connect('key_press_event', press)
@@ -54,8 +55,8 @@ def createImagesc(img):
 
     axcolor = 'lightgoldenrodyellow'
     BAR_HEIGHT = 0.03
-    axmin = plt.axes([0.2, 0.2 * BAR_HEIGHT, 0.7, BAR_HEIGHT], axisbg = axcolor)
-    axmax = plt.axes([0.2, BAR_HEIGHT + 0.4 * BAR_HEIGHT, 0.7, BAR_HEIGHT], axisbg = axcolor)
+    axmin = plt.axes([0.2, 0.2 * BAR_HEIGHT, 0.7, BAR_HEIGHT], facecolor=axcolor)
+    axmax = plt.axes([0.2, BAR_HEIGHT + 0.4 * BAR_HEIGHT, 0.7, BAR_HEIGHT], facecolor=axcolor)
     smin = Slider(axmin, 'Min', minVal, maxVal, valinit = minVal)
     smax = Slider(axmax, 'Max', minVal, maxVal, valinit = maxVal)
     smin.slidermax = smax
@@ -67,7 +68,7 @@ def createImagesc(img):
         img_crop = img.copy()
         img_crop[img_crop > currMax] = 1.0
         img_crop[img_crop < currMin] = 0.0
-        print 'Min [%f] - Max [%f]' % (currMin, currMax)
+        # print 'Min [%f] - Max [%f]' % (currMin, currMax)
         im.set_data(img_crop)
         im.set_clim(min(currMin, currMax), max(currMin, currMax))
         plt.figure(fig.number)
@@ -88,7 +89,7 @@ def createImagesc(img):
         fig.canvas.draw()
     button.on_clicked(invert)
 
-    rax = plt.axes([0.02, (2.4) * BAR_HEIGHT, 0.1, 0.1], axisbg=axcolor)
+    rax = plt.axes([0.02, (2.4) * BAR_HEIGHT, 0.1, 0.1], facecolor=axcolor)
     radio = RadioButtons(rax, ('jet', 'gray'), active=0)
 
     def colorfunc(label):
@@ -100,7 +101,7 @@ def createImagesc(img):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.argv.append('/GitHub/build/Nitrogen/bin/Debug/dispAvg.png')
+        sys.argv.append('/Data/0_Dataset/tof_stereo/ZEDKIN/Result/0/ToF/disparity_f.png')
 
     print 'Keypress:\n[space] to save\n[ESC] to quit'
 

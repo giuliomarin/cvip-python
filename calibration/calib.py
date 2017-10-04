@@ -7,8 +7,8 @@ import sys
 # Parameters
 #########################
 
-imgfilebase = '/Users/giulio/Dropbox (Personal)/Temporary/calibration/0/%s'
-imgfile = imgfilebase % 'img0_*.png'
+imgfilebase = '/Users/giulio/Desktop/color_calib/%s'
+imgfile = imgfilebase % 'img*.png'
 N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
 SIZE_CHECKERS = 20.0  # mm
 
