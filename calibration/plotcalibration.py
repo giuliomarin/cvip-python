@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 calibyml = 0
 
-calibPath = '/Users/giulio/Desktop/calib.xml'
+calibPath = '/Data/9_pg/c8_4cam_20170927/bundle/calib/checker/2017_09_15_11_20_22f/group0/sirs/sir0/CalibrationFile/ctgm020.xml'
 
 if calibyml:
     calib = ymlparser.parse(calibPath)
@@ -21,7 +21,7 @@ ax = Axes3D(fig)
 # List of colors (1=red, 2=green, 4=blue)
 # colorSequence = range(ncam)
 # shuffle(colorSequence)
-colorSequence = [1] * ncam
+colorSequence = [1, 2, 4]
 for c, color in enumerate(colorSequence):
     camera = 'camera_%d' % c
     if calibyml:
@@ -42,9 +42,9 @@ for c, color in enumerate(colorSequence):
     RR[:3, :3] = R
     print transformations.rotation_from_matrix(RR)[0] / np.pi * 180
     focal = K[0, 0]
-    if c > 2:
-        color = 2
-    utils.plotcam(ax, R, T.transpose(),
+    Rinv = R.transpose()
+    Tinv = -Rinv.dot(T)
+    utils.plotcam(ax, Rinv, Tinv.transpose(),
                   col=[(color & 1) > 0, (color & 2) > 0, (color & 4) > 0],
                   scale=4e-1, h=height, w=width, f=focal)
     # ax.scatter(0, 0, 500, c='r', linewidth=2.0)
