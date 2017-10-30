@@ -101,7 +101,7 @@ def createImagesc(img):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.argv.append('/Data/0_Dataset/tof_stereo/ZEDKIN/Result/0/ToF/disparity_f.png')
+        sys.argv.append('/Data/0_Dataset/multicam/calib/1/img_r1_s1_2.png')
 
     print 'Keypress:\n[space] to save\n[ESC] to quit'
 
