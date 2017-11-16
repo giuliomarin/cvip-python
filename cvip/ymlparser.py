@@ -93,11 +93,17 @@ def getInfoFromNodePath(ymlFilePath, nodePath):
     get the value of a given yml path of nodes
         \param ymlFilePath, path to the yml file to parse
         \param nodePath, list of nodes (from the root to the node that we want to read)
-    """ 
+    """
+    ymlObj = parse(ymlFilePath)
+    return getInfoFromNode(ymlObj, nodePath)
+
+def getInfoFromNode(ymlObj, nodePath):
+    """
+        \param ymlFilePath,  yml object
+        \param nodePath, list of nodes (from the root to the node that we want to read)
+    """
     # get the string value from the field selected
     try:
-        ymlObj = parse(ymlFilePath)
-        
         # go through the other nodes in the path
         for nodeName in (nodePath):
             try:
@@ -108,20 +114,20 @@ def getInfoFromNodePath(ymlFilePath, nodePath):
         # if here we got to the end of the path
         value = ymlObj
         return value
-     
+
     except Exception, err:
         raise Exception('Cannot get to the end of path ' + str(nodePath) + ' in file ' + ymlFilePath + '\nError found: ' + str(err.message))
 
 
-def checkNodeExists(ymlFilePath, nodePath):
+def checkNodeExists(ymlObj, nodePath):
     """
     check if a node exists
-        \param ymlFilePath, path to the yml file to parse
+        \param ymlObj, yml object
         \param nodePath, list of nodes (from the root to the node that we want to check)
     """
     # just try to read the node
     try:
-        nodeContent = getInfoFromNodePath(ymlFilePath, nodePath)
+        _ = getInfoFromNode(ymlObj, nodePath)
         return True
     except Exception:
         return False
