@@ -88,7 +88,7 @@ def imwrite(imgPath, img, colmap = None):
         \param imgPath : path to the .png image
         \img : image to store
     """
-    if (len(img.shape) > 2) and (img.shape[2] == 4):
+    if img.dtype == numpy.float32:
         return imwrite32f(imgPath, img)
     else:
         if not colmap is None:

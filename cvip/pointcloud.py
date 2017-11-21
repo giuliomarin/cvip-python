@@ -57,3 +57,7 @@ def addColor(data, color):
         # all the points with the same color
         data = numpy.concatenate([data, numpy.full(data.shape, color, dtype=numpy.float32)], axis=1)
     return data
+
+if __name__ == '__main__':
+    xyz = generatePlane(0, 0, 1, 0)
+    saveply('/GitHub/sampledata/3dmodels/plane.ply', xyz)
