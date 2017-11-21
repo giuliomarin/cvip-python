@@ -1,5 +1,5 @@
-size 320 240
 output test.png
+size 640 480
 
 camera 5 10 -25 0 0 0 0 1 0 60
 
