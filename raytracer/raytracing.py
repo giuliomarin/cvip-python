@@ -22,7 +22,7 @@ class Parameters:
 
 
 class Camera:
-    def __init__(self, width = None, height = None, eye = None, center = None, up = None, fovy = None):
+    def __init__(self, width=None, height=None, eye=None, center=None, up=None, fovy=None):
         self.width = width
         self.height = height
         self.eye = eye
@@ -52,17 +52,17 @@ class Light:
 
 
 class Directional(Light):
-    def __init__(self, direction, color, attenuation = np.asarray([1.0, 0.0, 0.0])):
+    def __init__(self, direction, color, attenuation=np.asarray([1.0, 0.0, 0.0])):
         Light.__init__(self)
         self.direction = normalize(np.asarray(direction))
         self.color = np.asarray(color)
         self.attenuation = attenuation
 
-    def getdirection(self, p = None):
+    def getdirection(self, p=None):
         return -self.direction
 
     @staticmethod
-    def getdistance(p = None):
+    def getdistance(p=None):
         return np.inf
 
     def applytransform(self, m):
@@ -70,7 +70,7 @@ class Directional(Light):
 
 
 class Point(Light):
-    def __init__(self, position, color, attenuation = np.asarray([1.0, 0.0, 0.0])):
+    def __init__(self, position, color, attenuation=np.asarray([1.0, 0.0, 0.0])):
         Light.__init__(self)
         self.position = np.asarray(position)
         self.color = np.asarray(color)
@@ -105,8 +105,8 @@ class Object:
 
 
 class TriangleSet(Object):
-    def __init__(self, vertex, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
-                 specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, vertex, ambient=np.array([0.0, 0.0, 0.0]), diffuse=np.array([0.0, 0.0, 0.0]),
+                 specular=np.array([0.0, 0.0, 0.0]), shininess=50.0, emission=np.array([0.0, 0.0, 0.0])):
 
         # Shape
         Object.__init__(self)
@@ -129,20 +129,20 @@ class TriangleSet(Object):
         e1 = self.b - self.a
         e2 = self.c - self.a
         p = np.cross(ray[1], e2)
-        det = np.sum(e1 * p, axis = 1)
+        det = np.sum(e1 * p, axis=1)
         if all(abs(det) < 1e-6):
             return
         t = ray[0] - self.a
-        u = np.sum(t * p, axis = 1)
+        u = np.sum(t * p, axis=1)
         ok = [a and b and c for a, b, c in zip(det > 1e-6, u >= 0, u <= det)]
         if not any(ok):
             return
         q = np.cross(t[np.where(ok)], e1[np.where(ok)])
         v = np.asarray([np.inf] * len(ok))
-        v[np.where(ok)] = np.sum(ray[1] * q, axis = 1)
+        v[np.where(ok)] = np.sum(ray[1] * q, axis=1)
         intersect = [a and b and c for a, b, c, in zip(ok, v >= 0, u + v <= det)]
         t = np.asarray([-1.0] * len(ok))
-        t[np.where(ok)] = np.sum(e2[np.where(ok)] * q, axis = 1) / det[np.where(ok)]
+        t[np.where(ok)] = np.sum(e2[np.where(ok)] * q, axis=1) / det[np.where(ok)]
         intersectfront = [a and b for a, b in zip(intersect, t > 1e-6)]
         idxvalid = np.where(intersectfront)[0]
         if len(idxvalid) == 0:
@@ -154,8 +154,8 @@ class TriangleSet(Object):
 
 
 class Triangle(Object):
-    def __init__(self, vertex, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
-                 specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, vertex, ambient=np.array([0.0, 0.0, 0.0]), diffuse=np.array([0.0, 0.0, 0.0]),
+                 specular=np.array([0.0, 0.0, 0.0]), shininess=50.0, emission=np.array([0.0, 0.0, 0.0])):
 
         # Shape
         Object.__init__(self)
@@ -209,8 +209,8 @@ class Triangle(Object):
 
 
 class Plane(Object):
-    def __init__(self, position, normal, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
-                 specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, position, normal, ambient=np.array([0.0, 0.0, 0.0]), diffuse=np.array([0.0, 0.0, 0.0]),
+                 specular=np.array([0.0, 0.0, 0.0]), shininess=50.0, emission=np.array([0.0, 0.0, 0.0])):
         # Shape
         Object.__init__(self)
         self.position = np.asarray(position)
@@ -244,8 +244,8 @@ class Plane(Object):
 
 
 class Checkerboard(Object):
-    def __init__(self, position, diru, dirv, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
-                 specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, position, diru, dirv, ambient=np.array([0.0, 0.0, 0.0]), diffuse=np.array([0.0, 0.0, 0.0]),
+                 specular=np.array([0.0, 0.0, 0.0]), shininess=50.0, emission=np.array([0.0, 0.0, 0.0])):
         # Shape
         Object.__init__(self)
         self.position = np.asarray(position)
@@ -288,15 +288,15 @@ class Checkerboard(Object):
         pplane = p - self.position
         pplane = (pplane.dot(self.diru), pplane.dot(self.dirv))
         if (((pplane[0] % (2 * self.size)) < self.size) and ((pplane[1] % (2 * self.size)) < self.size)) or (
-            ((pplane[0] % (2 * self.size)) >= self.size) and ((pplane[1] % (2 * self.size)) >= self.size)):
+                    ((pplane[0] % (2 * self.size)) >= self.size) and ((pplane[1] % (2 * self.size)) >= self.size)):
             return self.color_plane0
         else:
             return self.color_plane1
 
 
 class Sphere(Object):
-    def __init__(self, center, radius, ambient = np.array([0.0, 0.0, 0.0]), diffuse = np.array([0.0, 0.0, 0.0]),
-                 specular = np.array([0.0, 0.0, 0.0]), shininess = 50.0, emission = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, center, radius, ambient=np.array([0.0, 0.0, 0.0]), diffuse=np.array([0.0, 0.0, 0.0]),
+                 specular=np.array([0.0, 0.0, 0.0]), shininess=50.0, emission=np.array([0.0, 0.0, 0.0])):
 
         # Shape
         Object.__init__(self)
@@ -311,8 +311,8 @@ class Sphere(Object):
         self.color['shininess'] = shininess
 
         # Transformation
-        self.m = np.asmatrix(np.eye(4, dtype = np.float32))
-        self.Minv = np.asmatrix(np.eye(4, dtype = np.float32))
+        self.m = np.asmatrix(np.eye(4, dtype=np.float32))
+        self.Minv = np.asmatrix(np.eye(4, dtype=np.float32))
 
     def intersect(self, ray):
         # Apply inverse transform
@@ -452,7 +452,7 @@ def parsefile(filepath):
     vertex = []
     vertexnormal = []
 
-    transfstack = [np.asmatrix(np.eye(4, dtype = np.float32))]
+    transfstack = [np.asmatrix(np.eye(4, dtype=np.float32))]
 
     # Default global parameters
     attenuation = np.asarray([1.0, 0.0, 0.0])
@@ -588,7 +588,7 @@ def cross(a, b):
 
 
 def translate(x, y, z):
-    m = np.eye(4, dtype = np.float32)
+    m = np.eye(4, dtype=np.float32)
     m[0, 3] = x
     m[1, 3] = y
     m[2, 3] = z
@@ -597,16 +597,16 @@ def translate(x, y, z):
 
 def rotate(x, y, z, a):
     a = a / 180.0 * np.pi
-    r1 = np.cos(a) * np.asmatrix(np.eye(3, dtype = np.float32))
+    r1 = np.cos(a) * np.asmatrix(np.eye(3, dtype=np.float32))
     r2 = (1 - np.cos(a)) * np.asmatrix([[x * x, x * y, x * z], [x * y, y * y, y * z], [x * z, y * z, z * z]])
     r3 = np.sin(a) * np.asmatrix([[0, -z, y], [z, 0, -x], [-y, x, 0]])
-    m = np.asmatrix(np.eye(4, dtype = np.float32))
+    m = np.asmatrix(np.eye(4, dtype=np.float32))
     m[0:3, 0:3] = r1 + r2 + r3
     return m
 
 
 def scale(x, y, z):
-    m = np.asmatrix(np.eye(4, dtype = np.float32))
+    m = np.asmatrix(np.eye(4, dtype=np.float32))
     m[0, 0] = x
     m[1, 1] = y
     m[2, 2] = z
@@ -615,7 +615,7 @@ def scale(x, y, z):
 
 def normalize(x):
     if len(x.shape) > 1:
-        return x / np.linalg.norm(x, axis = -1).reshape((len(x), 1))
+        return x / np.linalg.norm(x, axis=-1).reshape((len(x), 1))
     else:
         return x / np.linalg.norm(x)
 
@@ -629,11 +629,13 @@ def trace_ray(ray, scene, light):
 
     # Find the point of intersection on the object.
     p = ray[0] + ray[1] * t
+
     # Find properties of the object.
     n = obj.getnormal(p)
     obj_col = obj.getcolor(p)
 
     c_ray = obj_col['ambient'] + obj_col['emission']
+
     # Shadow: find if the point is shadowed or not.
     for l in light:
         l_ray = (p + n * .0001, -l.getdirection(p))
@@ -647,11 +649,11 @@ def trace_ray(ray, scene, light):
             r = 0.0
         c_ray += l.color / (l.attenuation[0] + l.attenuation[1] * r + l.attenuation[2] * r ** 2) * \
                  (obj_col['diffuse'] * max(np.dot(n, l_ray[1]), 0) + obj_col['specular'] * (
-                 max(np.dot(n, h), 0) ** obj_col['shininess']))
+                     max(np.dot(n, h), 0) ** obj_col['shininess']))
     return obj, p, n, c_ray
 
 
-def printbar(curr, total, size = 20, freq = 10, pre = ''):
+def printbar(curr, total, size=20, freq=10, pre=''):
     if curr % freq is not 0:
         return
     num_done = int(float(curr) / float(total) * size)
@@ -695,7 +697,7 @@ def processstripe((scenedata, idfile, idstripe)):
     shuffle(hrange)
     shuffle(wrange)
     for i, y in enumerate(hrange):
-        printbar(i, len(hrange), pre = '[' + str(idfile) + '|' + str(idstripe) + '] ')
+        printbar(i, len(hrange), pre='[' + str(idfile) + '|' + str(idstripe) + '] ')
         for x in wrange:
             # Ray direction
 
@@ -734,7 +736,7 @@ def processstripe((scenedata, idfile, idstripe)):
     return img
 
 
-def processfile(filename, idfile = 0):
+def processfile(filename, idfile=0):
     if isinstance(filename, tuple):
         idfile = filename[1]
         filename = filename[0]
@@ -749,7 +751,7 @@ def processfile(filename, idfile = 0):
     results = p.map(processstripe, zip([scenedata] * num_stripes, [idfile] * num_stripes, range(num_stripes)))
     img = sum(results)
     # img = processstripe((scenedata, 0, 0))
-    printbar(1, 1, 0, pre = '[' + str(idfile) + '] ')
+    printbar(1, 1, 0, pre='[' + str(idfile) + '] ')
     print "--- %s seconds ---" % (time.time() - start_time)
 
     plt.imsave(os.path.join(foldername, param.outfilename), img)
