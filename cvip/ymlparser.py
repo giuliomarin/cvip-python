@@ -135,7 +135,7 @@ def checkNodeExists(ymlObj, nodePath):
         return False
 
 
-def write(ymlFilePath, ymlObj, header=None):
+def write(ymlFilePath, ymlObj, header=1):
 
     """
     write to file a yml obj
@@ -154,8 +154,19 @@ def write(ymlFilePath, ymlObj, header=None):
     yaml.dump(ymlObj, stream)
     stream.close()
 
-    # correct the '-' in the file (they are always 2 spaces behind)
+    # correct the '-' in the file
     lines = readLines(ymlFilePath)
+    num_spaces_block = 0
+    indent = 2
+    for i in range(len(lines)):
+        line = lines[i]
+        num_spaces = len(line) - len(line.lstrip(' '))
+        if num_spaces <= num_spaces_block:
+            num_spaces_block = 0
+        if line.lstrip(' ').startswith('- '):
+            num_spaces_block = num_spaces
+        if num_spaces_block > 0:
+            lines[i] = ' ' * indent + line
     document = '\n'.join(lines)
 
     # correct the '\'' in the file (they do not need to be read and python add them to every string)
@@ -166,7 +177,7 @@ def write(ymlFilePath, ymlObj, header=None):
     quote = "\"" 
     document = document.replace(escape + quote, quote)
 
-    if header :
+    if header:
         document = YML_HEADER + '1.0\n' + document
 
     # re-write the file
@@ -199,7 +210,15 @@ def ndarrayConstructor(loader, node):
     """
 
     mapping = loader.construct_mapping(node, deep=True)
-    mat = np.array(mapping["data"])
+    if mapping['dt'] == 'f':
+        dtype = np.float32
+    elif mapping['dt'] == 'd':
+        dtype = np.float64
+    elif mapping['dt'] == 'u':
+        dtype = np.uint8
+    else:
+        dtype = np.int
+    mat = np.array(mapping["data"], dtype=dtype)
     mat.resize(mapping["rows"], mapping["cols"])
 
     # Return matrix
@@ -223,9 +242,16 @@ def ndarrayRepresenter(dumper, mat):
     mapping = OrderedDict()
     mapping['rows'] = rows
     mapping['cols'] = cols
-    mapping['dt'] = 'd'
+    if mat.dtype == np.float32:
+        dtype = 'f'
+    elif mat.dtype == np.float64:
+        dtype = 'd'
+    else:
+        dtype = 'u'
+    mapping['dt'] = dtype
     mapping['data'] = mat.reshape(-1).tolist()
-    return dumper.represent_mapping(u"tag:yaml.org,2002:ndarray", mapping)
+    # return dumper.represent_mapping(u"tag:yaml.org,2002:ndarray", mapping)
+    return dumper.represent_mapping(u"tag:yaml.org,2002:opencv-matrix", mapping)
 
 
 #########################################################
