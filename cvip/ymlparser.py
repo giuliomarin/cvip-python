@@ -8,6 +8,7 @@ giulio.marin@me.com
 '''
 
 import numpy as np
+from collections import OrderedDict
 from pyaml import *
 
 ###########################################################
@@ -30,7 +31,8 @@ def prepareStringForReading(ymlFilePath):
     """
 
     # Add opencv yaml constructor
-    yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", opencvMatrixConstructor)
+    yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", ndarrayConstructor)
+    yaml.add_constructor(u"tag:yaml.org,2002:ndarray", ndarrayConstructor)
 
     # read the file in lines
     lines = readLines(ymlFilePath)
@@ -44,7 +46,7 @@ def prepareStringForReading(ymlFilePath):
     
     # replace all the quotes adding the escape \ first:
     escape = "\\"
-    quote = "\"" 
+    quote = "\""
     strToRead = strToRead.replace(quote, escape + quote)
 
     return strToRead
@@ -133,7 +135,7 @@ def checkNodeExists(ymlObj, nodePath):
         return False
 
 
-def write(ymlFilePath, ymlObj, header = None):
+def write(ymlFilePath, ymlObj, header=None):
 
     """
     write to file a yml obj
@@ -146,7 +148,10 @@ def write(ymlFilePath, ymlObj, header = None):
     stream = file(ymlFilePath, 'w')
 
     # dump the yml content into the stream
-    dump(ymlObj, stream)
+    yaml.add_representer(np.ndarray, ndarrayRepresenter)
+    represent_dict_order = lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
+    yaml.add_representer(OrderedDict, represent_dict_order)
+    yaml.dump(ymlObj, stream)
     stream.close()
 
     # correct the '-' in the file (they are always 2 spaces behind)
@@ -169,66 +174,6 @@ def write(ymlFilePath, ymlObj, header = None):
         outfile.write(document)   
 
 
-def replaceNodePathValue(ymlFilePath, nodePath, newValue, ymlFilePathOut = None):
-    """
-    get the list of subnodes names from a given node path
-        \param ymlFilePath, path to the yml file to parse
-        \param nodePath, list of nodes (from the root to the node that we want to read
-        \param newValue, value to replace
-    """ 
-
-    # Check if file has to be replaced
-    if ymlFilePathOut is None:
-        ymlFilePathOut = ymlFilePath
-
-    # check if a version header is present in the file
-    firstLine = readLines(ymlFilePath)[0]
-
-    # understand if the value to replace is a value or a vector
-    if isinstance(newValue, list):
-        # in case of a list first replace with an fake list of same dim (trick use string)
-        replaceNodePathValue(ymlFilePath, nodePath, '[' + 'a,'*(len(newValue)-1) + 'a]', ymlFilePathOut)
-
-        # then call recursively this function assigning every entry
-        for entryId, entryNewValue in enumerate(newValue):
-            nodePathEntry = nodePath + [entryId]
-            replaceNodePathValue(ymlFilePathOut, nodePathEntry, entryNewValue)
-
-    else:
-        # get the string value from the field selected
-        try:
-            strValueToReplace = str(newValue)
-            ymlObj = parse(ymlFilePath)
-
-            # create a string to execute
-            accessStr = ''
-            for item in nodePath:
-                accessStr = accessStr + '[' + repr(item) + ']'
-
-            # evaluate if the field exists
-            evalStr = 'ymlObj' + accessStr
-            try:
-                eval(evalStr)
-            except:
-                raise Exception('\nNode: ' + str(nodePath) + '\nnot found in: ' + ymlFilePath)
-
-            # execute the replacement
-            execStr = evalStr + ' = ' + '\'' + strValueToReplace + '\''
-            exec(execStr)
-
-            # write to file the object
-            write(ymlFilePathOut, ymlObj)
-
-            # if the original yaml file contained a version string, add it back at the top of the file
-            if firstLine.startswith(YML_HEADER) or firstLine.startswith(YML_HEADER.lower()):
-                doc = readLines(ymlFilePathOut)
-                doc.insert(0, firstLine)
-                with open(ymlFilePathOut, 'w') as outfile:
-                    outfile.writelines(["%s\n" % item  for item in doc])
-        except Exception, err:
-            raise Exception('Cannot get to the end of path ' + str(nodePath) + ' in file ' + ymlFilePath + '\nError found: ' + str(err.message))
-
-
 def readLines(filename):
     """
 Read lines as in a txt file
@@ -245,7 +190,7 @@ Read lines as in a txt file
     return thisList
 
 
-def opencvMatrixConstructor(loader, node):
+def ndarrayConstructor(loader, node):
     """
     Define an YAML constructor for loading from a YAML node 
     (YAML to Python Numpy Array)
@@ -261,7 +206,7 @@ def opencvMatrixConstructor(loader, node):
     return mat
 
  
-def opencvMatrixRepresenter(dumper, mat):
+def ndarrayRepresenter(dumper, mat):
     """
     Define a YAML representer for dumping into a YAML node
     (Python Numpy Array to YAML opencv matrix like representation)
@@ -269,77 +214,18 @@ def opencvMatrixRepresenter(dumper, mat):
         \param mat: matrice to dump
     """
 
-    mapping = {'rows': mat.shape[0], 'cols': mat.shape[1], 'dt': 'd', 'data': mat.reshape(-1).tolist()}
-    return dumper.represent_mapping(u"tag:yaml.org,2002:opencv-matrix", mapping)
-
-
-def writeMatrix(yamlFilePath, node, value):
-    """
-    Write a single matrix in a yaml file at a given node
-        \param yamlFilePath: path to the existing or to be created yaml file
-        \param node: list of string to the node
-        \param value: value to write at the node
-    """
-
-    # Check existence
-    if os.path.exists(yamlFilePath):
-        fileDidExist = True
+    if len(mat.shape) == 1:
+        rows = 1
+        cols = mat.shape[0]
     else:
-        fileDidExist = False
-
-    # Open file 
-    f = open(yamlFilePath, 'a')
-
-    # Add opencv yaml representer
-    yaml.add_representer(np.ndarray, opencvMatrixRepresenter)
-
-    # Write header if new file
-    if not fileDidExist:
-        f.write(YML_HEADER + " 1.0\n")
-
-    # Convert node and value into a dictionary (stream)
-    node.reverse()
-    for subNodeIdx, subNode in enumerate(node):
-        if subNodeIdx == 0:
-            innestDict = {}
-            innestDict[subNode] = value
-            innerDicts = innestDict
-        else:
-            outterDict = {}
-            outterDict[subNode] = innerDicts     
-            innerDicts = outterDict
-    stream = innerDicts
-    
-    # Dump data
-    yaml.dump(stream, f)
-
-
-def readMatrix(yamlFilePath, node, isThereHeader = True):
-    """
-    Read a opencv-like matrix from a yaml file 
-        \param yamlFilePath: path to the existing or to be created yaml file
-        \param node: node string list *** ONLY outter node supported (1 layer)***
-        \param isThereHeader: (optional) is the file contain a header or not
-        \retrun read matrix
-    """
-
-    # Check existence
-    if not os.path.exists(yamlFilePath):
-        raise Exception("File does not exist: " + yamlFilePath)
-
-    # Add opencv yaml constructor
-    yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", opencvMatrixConstructor)
-
-     # Open file
-    f = open(yamlFilePath, 'r')
-    if isThereHeader:
-        header = f.readline()
-
-    # Load
-    rslt = yaml.load(f)
-
-    # Get the corresponding node
-    return rslt[node[0]]
+        rows = mat.shape[0]
+        cols = mat.shape[1]
+    mapping = OrderedDict()
+    mapping['rows'] = rows
+    mapping['cols'] = cols
+    mapping['dt'] = 'd'
+    mapping['data'] = mat.reshape(-1).tolist()
+    return dumper.represent_mapping(u"tag:yaml.org,2002:ndarray", mapping)
 
 
 #########################################################
@@ -347,17 +233,4 @@ def readMatrix(yamlFilePath, node, isThereHeader = True):
 #########################################################
 
 if __name__ == "__main__":
-
-    if False:
-        ymlFilePath = '/GitHub/Fusion/apps/computestereo/data/ParametersFile.yml'
-        ymlFilePathOut = '/GitHub/Fusion/apps/computestereo/data/ParamsFile.yml'
-        nodePath = ['global', 'min_disparity']
-        newValue = 0
-        replaceNodePathValue(ymlFilePath, nodePath, newValue, ymlFilePathOut)
-        print 'Done'
-        pass
-    if True:
-        calibPath = r'/GitHub/Nitrogen_Build/bin/RelWithDebInfo/calib.yml'
-        a = getInfoFromNodePath(calibPath, ['camera_calibrations', 'camera_0'])
-        print a
-        pass
+    pass
