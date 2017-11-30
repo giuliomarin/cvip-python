@@ -1,6 +1,7 @@
 # import the necessary packages
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 
 def order_points(pts):
@@ -72,7 +73,7 @@ def four_point_transform(image, pts):
     maxHeight = max(int(heightA), int(heightB))
 
     # TODO: fix aspect ratio
-    maxHeight = int(maxHeight / 372. * 480.)
+    maxHeight = int(maxHeight / 210. * 297.)
 
     # now that we have the dimensions of the new image, construct
     # the set of destination points to obtain a "birds eye view",
@@ -92,16 +93,67 @@ def four_point_transform(image, pts):
     # return the warped image
     return warped
 
+mouseX = []
+mouseY = []
 
-image = cv2.imread('/Users/giulio/Desktop/FullSizeRender.jpg')
-pts = np.array([(375, 125), (1990, 103), (2400, 1742), (161, 1848)], dtype = "float32")
+def draw_circle(event, x, y, flags,param):
+    if event == cv2.EVENT_LBUTTONUP:
+        # cv2.circle(img,(x,y),100,(255,0,0),-1)
+        mouseX.append(x)
+        mouseY.append(y)
+
+drawing = False # true if mouse is pressed
+mode = True # if True, draw rectangle. Press 'm' to toggle to curve
+ix,iy = -1,-1
+
+# mouse callback function
+def draw_lines(event,x,y,flags,param):
+    global ix,iy,drawing,mode
+    print event
+    if event == cv2.EVENT_LBUTTONDOWN:
+        drawing = True
+        ix,iy = x,y
+
+    elif event == cv2.EVENT_MOUSEMOVE:
+        if drawing == True:
+            if mode == True:
+                cv2.rectangle(img,(ix,iy),(x,y),(0,255,0),-1)
+            else:
+                cv2.circle(img,(x,y),5,(0,0,255),-1)
+
+    elif event == cv2.EVENT_LBUTTONUP:
+        drawing = False
+        if mode == True:
+            cv2.rectangle(img,(ix,iy),(x,y),(0,255,0),-1)
+        else:
+            cv2.circle(img,(x,y),5,(0,0,255),-1)
+
+image = cv2.imread('/Users/giulio/Desktop/IMG_0134.jpg')
+
+scale = 0.3
+img = cv2.resize(image, (int(image.shape[1] * scale), int(image.shape[0] * scale)))
+cv2.namedWindow('image')
+cv2.setMouseCallback('image',draw_lines)
+while(1):
+    cv2.imshow('image',img)
+    k = cv2.waitKey(1) & 0xFF
+    if k == ord('m'):
+        mode = not mode
+    elif k == 27:
+        break
+
+exit(0)
+
+# plt.imshow(image)
+# plt.show()
+pts = np.array([(166,167), (741, 185), (838, 940), (17, 920)], dtype="float32")
 
 # apply the four point tranform to obtain a "birds eye view" of
 # the image
 warped = four_point_transform(image, pts)
 
 # show the original and warped images
-cv2.imshow("Original", image)
-cv2.imshow("Warped", warped)
+# cv2.imshow("Original", image)
+# cv2.imshow("Warped", warped)
 # cv2.waitKey(0)
 cv2.imwrite('/Users/giulio/Desktop/warp.jpg', warped)

@@ -19,5 +19,5 @@ def parse(filepath):
     return ElementTree.parse(filepath)
 
 if __name__ == '__main__':
-    calib = parse('/Data/1_seat/originaldata/2017_03_22_14_26_12/front/ProcessedCalib/extrinsics0_simple.xml')
+    calib = parse('/Users/giulio/git/sampledata/calib.xml')
     print get(calib, ['camera_calibrations', 'camera_0', 'K'])

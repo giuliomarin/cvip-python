@@ -20,7 +20,7 @@ else:
 #######################
 
 # Loop all the cameras
-for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
+for cam in range(int(xml.get(calibNode1, ['numCameras']))):
     cameraname = ['master', 'slave', 'color']
     camera = cameraname[cam]
 
@@ -28,8 +28,8 @@ for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
     # Intrinsics
     #######################
 
-    K1 = xml.getmat(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'K'])
-    K2 = xml.getmat(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'K'])
+    K1 = xml.get(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'K'])
+    K2 = xml.get(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'K'])
 
     # Focal length and principal point
     fx = K1[0, 0] - K2[0, 0]
@@ -41,10 +41,10 @@ for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
     # Extrinsics
     #######################
 
-    R1 = xml.getmat(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'R'])
-    R2 = xml.getmat(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'R'])
-    T1 = xml.getmat(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'T'])
-    T2 = xml.getmat(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'T'])
+    R1 = xml.get(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'R'])
+    R2 = xml.get(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'R'])
+    T1 = xml.get(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'T'])
+    T2 = xml.get(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'T'])
 
     # Relative transformation
     R33 = R2.dot(np.linalg.inv(R1))
@@ -57,9 +57,9 @@ for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
     # Distortion
     #######################
 
-    D1 = xml.getmat(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'D'])
-    D2 = xml.getmat(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'D'])
-    res = xml.getmat(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'resolution']).split()
+    D1 = xml.get(calibNode1, ['camera_calibrations', 'camera_%d' % cam, 'D'])
+    D2 = xml.get(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'D'])
+    res = xml.get(calibNode2, ['camera_calibrations', 'camera_%d' % cam, 'resolution']).split()
     w, h = [int(res[0]), int(res[1])]
 
     mapx1, mapy1 = cv2.initUndistortRectifyMap(K1, D1, None, K1, (w, h), cv2.CV_32FC1)
@@ -82,7 +82,8 @@ for cam in range(int(xml.getmat(calibNode1, ['numCameras']))):
     plt.set_cmap('Reds')
     plt.clim([0, 2])
     plt.title(res + 'Rectification map (|map1 - map2|) [px]')
-    plt.savefig('results_%s.pdf' % camera, bbox_inches='tight')
+    # plt.savefig('results_%s.pdf' % camera, bbox_inches='tight')
+    plt.show()
 
 if 0:
     plt.figure()

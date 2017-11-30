@@ -233,6 +233,7 @@ def tostr(arr, prec = 3):
         strout += '\n'
     return strout
 
+
 if __name__ == '__main__':
 
     # Test merge images
