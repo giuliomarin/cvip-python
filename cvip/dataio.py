@@ -19,8 +19,8 @@ def imread(imgPath):
     """
     Load a char/float mat stored in a png file
         \param imgPath : path to the .png image
-        \return : is float
         \return : matrix values
+        \return : is float
     """
 
     # Check if file exists
@@ -88,10 +88,12 @@ def imwrite(imgPath, img, colmap = None):
         \param imgPath : path to the .png image
         \img : image to store
     """
+
+    print 'Writing: %s' % imgPath
     if img.dtype == numpy.float32:
         return imwrite32f(imgPath, img)
     else:
-        if not colmap is None:
+        if colmap is not None:
             if len(img.shape) < 3:
                 imggray = img.astype(numpy.uint8)
             else:
@@ -100,7 +102,7 @@ def imwrite(imgPath, img, colmap = None):
                 img = colmap[imggray] * 255
             else:
                 img = colmap(imggray) * 255
-        return cv2.imwrite(imgPath, img)
+        return cv2.imwrite(imgPath, opencv2matplotlib(img))
 
 #TODO write function to save pfm format
 
@@ -139,14 +141,40 @@ def imwrite32f(imgPath, img):
         raise TypeError('Image is not float32')
     # Save image
     imgToWrite = numpy.zeros((img.shape[0], img.shape[1], 4), numpy.uint8)
-    imgToWrite.data = img.data
+    imgToWrite.data = img.flatten()
     cv2.imwrite(imgPath, imgToWrite)
 
 
 if __name__ == '__main__':
     import sys
-    img = imread(sys.argv[1])[0]
+    img = imread('/Data/0_Dataset/multicam_out/Result/6/ToF/confidenceTofMeasure_f.png')[0]
+    # img = imread(sys.argv[1])[0]
+    # imgorig = img.copy()
+    # img[img <= 0] = numpy.nan
+    # img[img > 1500] = numpy.nan
+    # d = numpy.mean(img[~numpy.isnan(img)])
+    # print d
+    # img = 1/img * 600 * 50
+    # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/19/sir/Prefilter/slavePre_1.png')[0]
+    # img2 = imread('/GitHub/CommonTools/submodules/Nitrogen/30/sir/Prefilter/slavePre_1.png')[0]
+    # img1 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23_1thread/sir/Prefilter/masterPre_1.png')[0]
+    # img2 = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot23/sir/Prefilter/masterPre_1.png')[0]
+
+    # cmin = d * 0.97
+    # cmax = d * 1.03
+    # img[(d - 1 < imgorig) & (imgorig < d + 1)] = numpy.nan
+    # img[cmax < imgorig] = numpy.nan
+    # img[cmin > imgorig] = numpy.nan
+    # img[0,0] = cmin
+    # img[0,1] = cmax
+    # img = numpy.abs(img1.astype(float) - img2.astype(float))
+    # print numpy.sum(img)
+    # img = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/31/sir/Disparity/disparity_1.png')[0]
+    # img = imread('/GitHub/build/Nitrogen/bin/RelWithDebInfo/Snapshot17/sir/Disparity/disparity_2.png')[0]
     import matplotlib.pyplot as plt
     plt.imshow(img)
     plt.colorbar()
+    # plt.title('Distance: %d' % d)
+    # plt.colorbar()
+    # plt.imsave("disp1.png", img, cmap='Greys')
     plt.show()
