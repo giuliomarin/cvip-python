@@ -130,7 +130,7 @@ class SensorCalib(object):
 
 def createRT(R, T):
     R = np.asarray(R)
-    if R.shape[0] != 3 and R.shape[1] != 3:
+    if R.shape[0] != 3 or R.shape[1] != 3:
         raise ValueError('R has wrong shape: (%d, %d)' % (R.shape[0], R.shape[1]))
     T = np.asarray(T)
     if len(T.ravel()) != 3:
@@ -141,6 +141,8 @@ def createRT(R, T):
     return RT
 
 def invRT(M):
+    if 3 > M.shape[0] > 4 or M.shape[1] != 4:
+        raise ValueError('M has wrong shape: (%d, %d)' % (M.shape[0], M.shape[1]))
     R = M[:3, :3]
     T = M[:3, 3]
     Minv = np.eye(M.shape[0], M.shape[1])
@@ -156,7 +158,6 @@ def getIntrinsics(calib_cam):
     else:
         # Just return K
         return calib_cam.K
-
 
 def getExtrinsics(calib_cam):
     R = calib_cam.R
@@ -208,7 +209,6 @@ def drawCheckerboard(img, K, R, T, nx=10, ny=8, sx=20, sy=20):
     for i in range(nx):
         cv2.line(img, pts2d[i], pts2d[(ny - 1) * nx + i], (255, 20, 20), size)
     return img
-
 
 def printMat(m):
     print 'rows: %d' % m.shape[0]
