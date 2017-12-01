@@ -1,13 +1,18 @@
 language: python
 
+python:
+  - "2.7"
+
+virtualenv:
+  system_site_packages: true
+
 before_install:
  - sudo apt-get update
- - sudo apt-get install python-opencv
+ - sudo apt-get install -y python-opencv
  - sudo dpkg -L python-opencv
+
 install:
   - "pip install --pre -r requirements.txt"
 
-python:
-  - "2.7"
 script:
   - python unittests/main.py
