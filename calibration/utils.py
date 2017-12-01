@@ -1,4 +1,4 @@
-from cvip import ymlparser, xmlparser
+from cvip import ymlparser
 from collections import OrderedDict
 import numpy as np
 import cv2

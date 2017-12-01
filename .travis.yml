@@ -8,7 +8,7 @@ virtualenv:
 
 before_install:
  - sudo apt-get update
- - sudo apt-get install -y python-opencv
+ - sudo apt-get install -y python-opencv python-tk
  - sudo dpkg -L python-opencv
 
 install:
