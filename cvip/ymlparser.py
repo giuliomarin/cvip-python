@@ -25,7 +25,7 @@ YML_HEADER = '%YAML:'
 
 def prepareStringForReading(ymlFilePath):
     """
-    load the yaml file into a string, ready for reading using the yaml library 
+    load the yaml file into a string, ready for reading using the yaml library
         \param ymlFilePath, path to the yml file to parse
         \return strToRead, string to read
     """
@@ -36,14 +36,14 @@ def prepareStringForReading(ymlFilePath):
 
     # read the file in lines
     lines = readLines(ymlFilePath)
-        
+
     # remove the header if it's YAML
     if lines[0].startswith(YML_HEADER) or lines[0].startswith(YML_HEADER.lower()):
         lines.pop(0)
 
     # join into a unique string
     strToRead = '\n'.join(lines)
-    
+
     # replace all the quotes adding the escape \ first:
     escape = "\\"
     quote = "\""
@@ -80,7 +80,7 @@ def parse(ymlFilePath):
     strToRead = prepareStringForReading(ymlFilePath)
 
     # try to parse the file
-    try:  
+    try:
         yamlObj = yaml.load(strToRead)
         success = True
     except Exception, e:
@@ -142,8 +142,8 @@ def write(ymlFilePath, ymlObj, header=1):
         \param ymlFilePath, path to the yml file to parse
         \param ymlObj, object containing the yml info
         \param header, header line to be written to the yml file
-    """ 
-    
+    """
+
     # create a stream to write to file
     stream = file(ymlFilePath, 'w')
 
@@ -174,7 +174,7 @@ def write(ymlFilePath, ymlObj, header=1):
 
     # eliminate the escape \ for the quotes in the final document
     escape = "\\"
-    quote = "\"" 
+    quote = "\""
     document = document.replace(escape + quote, quote)
 
     if header:
@@ -182,14 +182,14 @@ def write(ymlFilePath, ymlObj, header=1):
 
     # re-write the file
     with open(ymlFilePath, 'w') as outfile:
-        outfile.write(document)   
+        outfile.write(document)
 
 
 def readLines(filename):
     """
 Read lines as in a txt file
     \param filename path to the txt file to read
-    \return thisList list of lines 
+    \return thisList list of lines
 """
     # check if the file exist
     if not os.path.exists(filename):
@@ -203,7 +203,7 @@ Read lines as in a txt file
 
 def ndarrayConstructor(loader, node):
     """
-    Define an YAML constructor for loading from a YAML node 
+    Define an YAML constructor for loading from a YAML node
     (YAML to Python Numpy Array)
         \param loader: loader, instance of pyYaml
         \param node: node to het the data from
@@ -224,7 +224,7 @@ def ndarrayConstructor(loader, node):
     # Return matrix
     return mat
 
- 
+
 def ndarrayRepresenter(dumper, mat):
     """
     Define a YAML representer for dumping into a YAML node

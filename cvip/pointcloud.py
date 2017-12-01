@@ -58,11 +58,6 @@ def addColor(data, color):
         data = numpy.concatenate([data, numpy.full(data.shape, color, dtype=numpy.float32)], axis=1)
     return data
 
-def checkPC(filename):
-    pass
-
 if __name__ == '__main__':
     xyz = generatePlane(0, 0, 1, 0)
     saveply('/GitHub/sampledata/3dmodels/plane.ply', xyz)
-    exit(0)
-    checkPC('/GitHub/sampledata/3dmodels/rubik.ply')
