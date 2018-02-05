@@ -9,6 +9,8 @@ import numpy as np
 
 num_stripes = 4
 
+#TODO: export depth map
+
 
 #################
 # Classes

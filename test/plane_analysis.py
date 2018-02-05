@@ -2,8 +2,8 @@ import numpy as np
 from cvip import dataio
 import matplotlib.pyplot as plt
 
-dist = '1000'
 imgpath = '/Volumes/RegressionTesting/SIR/RailTests/genericTests/AQP_Scanner/WallTests/01_27_2017/FlatWall_30_Q_50C_00075_20170204-015805/DataFlatWall/%s/Depth/depth_%d.png'
+dist = 1000
 
 imgAvg = img = dataio.imread(imgpath % (dist, 1))[0]
 
@@ -17,7 +17,8 @@ for i in range(2, 50):
 imgAvg /= num
 avgD = np.nanmean(imgAvg)
 minD = np.nanmin(imgAvg)
-print avgD, minD
+maxD = np.nanmax(imgAvg)
+print avgD, minD, maxD
 imgAvg -= avgD
 
 plt.figure('bias')
@@ -25,7 +26,8 @@ plt.imshow(imgAvg)
 plt.title('%s mm' % dist)
 plt.colorbar()
 plt.set_cmap('Reds')
-plt.clim(-20, 20)
+distRange = 0.01 * dist
+plt.clim(-distRange, distRange)
 # plt.imsave("disp.png", img, cmap='Greys')
 
 # plt.figure('average')

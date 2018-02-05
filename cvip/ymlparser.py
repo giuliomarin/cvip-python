@@ -187,10 +187,10 @@ def write(ymlFilePath, ymlObj, header=1):
 
 def readLines(filename):
     """
-Read lines as in a txt file
+    Read lines as in a txt file
     \param filename path to the txt file to read
     \return thisList list of lines
-"""
+    """
     # check if the file exist
     if not os.path.exists(filename):
         raise Exception("file", filename, "not found")

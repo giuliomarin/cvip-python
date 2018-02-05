@@ -1,8 +1,7 @@
-"""Characteristics of a stereo system."""
-
 import matplotlib.pyplot as plt
 import numpy as np
 
+"""Characteristics of a stereo system."""
 __author__ = "Giulio Marin"
 __email__ = "giulio.marin@me.com"
 __date__ = "2016/04/30"
@@ -17,11 +16,11 @@ LINE_W = 2
 
 # Stereo cameras
 SIZE_SENSOR = (480, 640)
-FOCAL_H_PXL = 500  # [mm]
+FOCAL_H_PXL = 700  # [mm]
 FOCAL_V_PXL = FOCAL_H_PXL  # [mm]
 
 BASELINE = [50.0, 70.0]  # [mm]
-SUBPIXEL = [1., 1./16]  # pixel
+SUBPIXEL = [1., 1. / 16]  # pixel
 
 print '------------------'
 print 'Parameters'
@@ -61,7 +60,7 @@ Z_VEC = np.arange(300, 2001, 10)
 plt.figure()
 for b in BASELINE:
     percFov = 1 - b * FOCAL_H_PXL / (Z_VEC * SIZE_SENSOR[1])
-    currP = plt.plot(Z_VEC, percFov, label = ('Baseline=%d' % b))
+    currP = plt.plot(Z_VEC, percFov, label=('Baseline=%d' % b))
 
 plt.title('Percentage common FoV')
 plt.xlabel('Distance [mm]')
@@ -70,11 +69,54 @@ plt.legend(loc='upper left')
 plt.xlim((Z_VEC[0], Z_VEC[-1]))
 plt.grid()
 for l in plt.gca().lines:
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 plt.show()
 # plt.savefig('commonfov.png', transparent = True)
+
+######################
+# Size of FOV
+######################
+
+Z_VEC = np.arange(300, 2001, 10)
+
+plt.figure()
+for b in BASELINE:
+    percFov = 1 - b * FOCAL_H_PXL / (Z_VEC * SIZE_SENSOR[1])
+    sizeFov = percFov * 2 * np.tan(FOV_H / 2.) * Z_VEC
+    currP = plt.plot(Z_VEC, sizeFov, label=('Baseline=%d' % b))
+
+plt.title('Size of common H FoV')
+plt.xlabel('Distance [mm]')
+plt.ylabel('Size of FoV [mm]')
+plt.legend(loc='upper left')
+plt.xlim((Z_VEC[0], Z_VEC[-1]))
+plt.grid()
+for l in plt.gca().lines:
+    plt.setp(l, linewidth=LINE_W)
+for l in plt.gca().get_legend().get_lines():
+    plt.setp(l, linewidth=LINE_W)
+plt.show()
+# plt.savefig('sizecommonfovh.png', transparent = True)
+
+plt.figure()
+for b in BASELINE:
+    sizeFov = 2 * np.tan(FOV_H / 2.) * Z_VEC
+    currP = plt.plot(Z_VEC, sizeFov, label=('Baseline=%d' % b))
+
+plt.title('Size of common V FoV')
+plt.xlabel('Distance [mm]')
+plt.ylabel('Size of FoV [mm]')
+plt.legend(loc='upper left')
+plt.xlim((Z_VEC[0], Z_VEC[-1]))
+plt.grid()
+for l in plt.gca().lines:
+    plt.setp(l, linewidth=LINE_W)
+for l in plt.gca().get_legend().get_lines():
+    plt.setp(l, linewidth=LINE_W)
+plt.show()
+# plt.savefig('sizecommonfovv.png', transparent = True)
 
 ######################
 # Depth resolution
@@ -85,8 +127,8 @@ Z_VEC = np.arange(300, 2001, 10)
 plt.figure()
 for b in BASELINE:
     for s in SUBPIXEL:
-        deltaZ = Z_VEC**2 / (FOCAL_H_PXL * b - Z_VEC * s) * s
-        currP = plt.plot(Z_VEC, deltaZ, label = ('Baseline=%d\nSubpixel=%.3f' % (b, s)))
+        deltaZ = Z_VEC ** 2 / (FOCAL_H_PXL * b - Z_VEC * s) * s
+        currP = plt.plot(Z_VEC, deltaZ, label=('Baseline=%d\nSubpixel=%.3f' % (b, s)))
 
 plt.title('Depth resolution at different distance')
 plt.xlabel('Distance [mm]')
@@ -95,9 +137,9 @@ plt.legend(loc='upper left')
 plt.xlim((Z_VEC[0], Z_VEC[-1]))
 plt.grid()
 for l in plt.gca().lines:
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 plt.show()
 # plt.savefig('depthres.png', transparent = True)
 
@@ -110,7 +152,7 @@ Z_VEC = np.arange(300, 2001, 10)
 plt.figure()
 for b in BASELINE:
     disparity = b * FOCAL_H_PXL / Z_VEC
-    plt.plot(Z_VEC, disparity, label = ('Baseline=%d' % b))
+    plt.plot(Z_VEC, disparity, label=('Baseline=%d' % b))
 
 plt.title('Disparity at different distance')
 plt.xlabel('Distance [mm]')
@@ -119,9 +161,9 @@ plt.legend(loc='upper right')
 plt.xlim((Z_VEC[0], Z_VEC[-1]))
 plt.grid()
 for l in plt.gca().lines:
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
-    plt.setp(l, linewidth = LINE_W)
+    plt.setp(l, linewidth=LINE_W)
 plt.show()
 # plt.savefig('disparitydepth.png', transparent = True)
 

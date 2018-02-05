@@ -73,7 +73,7 @@ def four_point_transform(image, pts):
     maxHeight = max(int(heightA), int(heightB))
 
     # TODO: fix aspect ratio
-    maxHeight = int(maxHeight / 210. * 297.)
+    maxHeight = int(maxHeight * 220. / 220.)
 
     # now that we have the dimensions of the new image, construct
     # the set of destination points to obtain a "birds eye view",
@@ -128,25 +128,25 @@ def draw_lines(event,x,y,flags,param):
         else:
             cv2.circle(img,(x,y),5,(0,0,255),-1)
 
-image = cv2.imread('/Users/giulio/Desktop/IMG_0134.jpg')
+image = cv2.imread('/Users/giulio/Desktop/towarp.jpg')
 
 scale = 0.3
 img = cv2.resize(image, (int(image.shape[1] * scale), int(image.shape[0] * scale)))
-cv2.namedWindow('image')
-cv2.setMouseCallback('image',draw_lines)
-while(1):
-    cv2.imshow('image',img)
-    k = cv2.waitKey(1) & 0xFF
-    if k == ord('m'):
-        mode = not mode
-    elif k == 27:
-        break
-
-exit(0)
+# cv2.namedWindow('image')
+# cv2.setMouseCallback('image',draw_lines)
+# while(1):
+#     cv2.imshow('image',img)
+#     k = cv2.waitKey(1) & 0xFF
+#     if k == ord('m'):
+#         mode = not mode
+#     elif k == 27:
+#         break
+#
+# exit(0)
 
 # plt.imshow(image)
 # plt.show()
-pts = np.array([(166,167), (741, 185), (838, 940), (17, 920)], dtype="float32")
+pts = np.array([(125, 387), (2285, 565), (2236, 2883), (190, 3264)], dtype="float32")
 
 # apply the four point tranform to obtain a "birds eye view" of
 # the image

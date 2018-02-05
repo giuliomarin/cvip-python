@@ -4,7 +4,7 @@ import argparse
 import datetime
 from cvip import utils
 import time
-import  numpy as np
+import numpy as np
 import cv2
 
 outDir = '/Users/giulio/Desktop/surveillance'
@@ -87,8 +87,8 @@ while True:
 
     # show the frame and record if moving
     cv2.imshow("Security Feed", frame)
-    cv2.imshow("Thresh", thresh)
-    cv2.imshow("Frame Delta", frameDelta)
+    img = np.concatenate((thresh, frameDelta))
+    cv2.imshow("Thresh | Frame delta", img)
     if moving:
         filepath = os.path.join(outDir, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.jpg'))
         cv2.imwrite(filepath, frameorig)

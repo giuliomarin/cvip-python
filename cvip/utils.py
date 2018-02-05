@@ -38,7 +38,7 @@ def plotcam(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0, f = 
     coloredaxes = np.asarray([pw[4], pw[3]])
     ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'g', linewidth=2.0)  # y
 
-def plotplane(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0, f = 7.0):
+def plotplane(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0):
     """
         Plot a camera with a given pose. Camera looks at z.
             \param ax : handle to the axes
@@ -48,24 +48,18 @@ def plotplane(ax, r, t, col = [0.2, 0.2, 0.2], scale = 1.0, h = 3.0, w = 4.0, f 
             \param scale: size of the camera
     """
 
-    pp = np.array([[0, 0, 0], [w, 0, f], [w, h, f], [0, h, f], [0, 0, f]]).transpose()
+    pp = np.array([[0, 0, 0], [w, 0, 0], [w, h, 0], [0, h, 0]]).transpose()
     pp *= scale
     pw = np.asarray(r).dot(pp) + np.asmatrix(t).transpose()
     pw = pw.transpose().tolist()
 
-    # for i in [[0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1]]:
-    #     poly = Poly3DCollection([[pw[i[0]], pw[i[1]], pw[i[2]]]])
-    #     poly.set_alpha(0.1)
-    #     poly.set_color(col)
-    #     ax.add_collection3d(poly)
-
-    poly = Poly3DCollection([[pw[1], pw[2], pw[3], pw[4]]])
+    poly = Poly3DCollection([[pw[0], pw[1], pw[2], pw[3]]])
     poly.set_alpha(0.2)
     poly.set_color(col)
     ax.add_collection3d(poly)
-    coloredaxes = np.asarray([pw[4], pw[1]])
+    coloredaxes = np.asarray([pw[0], pw[1]])
     ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'r', linewidth=2.0)  # x
-    coloredaxes = np.asarray([pw[4], pw[3]])
+    coloredaxes = np.asarray([pw[0], pw[3]])
     ax.plot(coloredaxes[:, 0], coloredaxes[:, 1], coloredaxes[:, 2], 'g', linewidth=2.0)  # y
 
 
@@ -247,7 +241,7 @@ if __name__ == '__main__':
         mergeimages(['../unittests/rgb.png', '../unittests/rgb.png'], 2, 0.2, '../unittests/merge.png')
 
     # Test plot camera
-    if True:
+    if False:
         fig = plt.figure('camera')
         ax = Axes3D(fig)
 
@@ -258,6 +252,23 @@ if __name__ == '__main__':
         # plot camera 2
         r = tf.rotation_matrix(np.deg2rad(90), [1, 0, 0])[:3, :3]
         plotcam(ax, r, [1, 0, 0], col=[0.2, 0.2, 0.2], scale=0.05)
+
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+        ax.set_xlim((-1, 1))
+        ax.set_ylim((-1, 1))
+        ax.set_zlim((-1, 1))
+        ax.autoscale_view()
+        plt.show()
+
+    if True:
+        fig = plt.figure('plane')
+        ax = Axes3D(fig)
+
+        # plot camera 1
+        r = tf.rotation_matrix(np.deg2rad(0), [0, 0, 1])[:3, :3]
+        plotplane(ax, r, [0, 0, 0], scale=0.1, h=3.0, w=4.0)
 
         ax.set_xlabel('x')
         ax.set_ylabel('y')

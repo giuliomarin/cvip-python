@@ -7,13 +7,14 @@ import sys
 # Parameters
 #########################
 
-imgfilebase = '/Users/giulio/Desktop/color_calib/%s'
-imgfile = imgfilebase % 'img*.png'
-N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
+imgfilebase = '/Data/13_calibration/multicampos/2018_01_26_21_59_33/undefined_side/sirs/sir0/Frames/%s'
+imgfile = imgfilebase % 'color0_*.png'
+N_CHECKERS = (4, 5)  # (points_per_row,points_per_colum)
 SIZE_CHECKERS = 20.0  # mm
 
 # Visualization
 H_IMGS = 480  # -1 for original size
+
 
 #########################
 # Functions
@@ -33,13 +34,14 @@ def resizeimgw(img, w):
         return cv2.resize(img, (w, int(float(img.shape[0]) / img.shape[1] * w)))
 
 
-def tostr(arr, prec = 3):
+def tostr(arr, prec=3):
     strout = ''
     for l in arr:
         for c in l:
             strout += ('%.' + str(prec) + 'f ') % c
         strout += '\n'
     return strout
+
 
 ##########################
 # Calibration
@@ -54,7 +56,7 @@ if len(images) == 0:
 # Prepare object points
 objp = np.zeros((np.prod(N_CHECKERS), 3), np.float32)
 objp[:, :2] = np.mgrid[0:N_CHECKERS[0], 0:N_CHECKERS[1]].T.reshape(-1, 2)
-objp *= SIZE_CHECKERS;
+objp *= SIZE_CHECKERS
 
 # Arrays to store object points and image points from all the images.
 objPoints = []  # 3d point in real world space
@@ -81,7 +83,7 @@ for fname in images:
 
     # Find the chess board corners
     ret, corners = cv2.findChessboardCorners(gray, N_CHECKERS, None,
-                                             flags = cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FILTER_QUADS)
+                                             flags=cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FILTER_QUADS)
 
     # If not found skip impage
     if ret is not True:
@@ -104,7 +106,7 @@ for fname in images:
         cv2.imshow('curr img', imgToShow)
 
     # Draw all the corners found so far
-    imgAll = np.zeros(img.shape, dtype = np.uint8)
+    imgAll = np.zeros(img.shape, dtype=np.uint8)
     pointSize = int(round(imgAll.shape[1] / 350.0))
     for f in imgPoints:
         for p in f:
@@ -117,7 +119,7 @@ print '\n%d checkerboards detected' % n_valid
 print '%d checkerboards not detected' % (len(images) - n_valid)
 
 # Save image points for debug
-cv2.imwrite(imgfilebase % 'allpoints.png', imgAll)
+# cv2.imwrite(imgfilebase % 'allpoints.png', imgAll)
 
 # Calibration routine
 print '\nCompute calibration'
@@ -126,9 +128,9 @@ ret, K, D, rvecs, tvecs = cv2.calibrateCamera(objPoints, imgPoints, gray.shape[:
 # Print and calibration parameters
 calibstr = 'K:\n%s\nD:\n%s' % (tostr(K, 2), tostr(D, 5))
 print calibstr
-print 'Save calibration'
-with open(imgfilebase % 'calib.txt', 'w') as calibfile:
-    calibfile.write(calibstr)
+# print 'Save calibration'
+# with open(imgfilebase % 'calib.txt', 'w') as calibfile:
+#     calibfile.write(calibstr)
 
 # Compute reprojection error
 print '\nCompute reprojection error'
