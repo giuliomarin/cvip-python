@@ -6,6 +6,28 @@ __author__ = "Giulio Marin"
 __email__ = "giulio.marin@me.com"
 __date__ = "2016/04/30"
 
+class Camera:
+    def __init__(self, sensor_name, lens_name, sensor_size, fov, baseline, subpixel):
+        # input
+        self.sensor_size = np.asarray(sensor_size)
+        self.fov = np.asarray(fov)
+        self.fov_rad = np.deg2rad(np.asarray(fov))
+        self.baseline = float(baseline)
+        self.subpixel = float(subpixel)
+        self.name = "%s_%s_%dx%d_b%.0f" % (sensor_name, lens_name, self.sensor_size[0], self.sensor_size[1], self.baseline)
+
+        # Computed
+        self.focal = self.sensor_size / 2.0 / np.tan(self.fov_rad / 2.0)
+
+    def __repr__(self):
+        str = "-------------------------------"
+        str += "\nSensor: %s" % self.name
+        str += "\nSize = [%d, %d] px" % (self.sensor_size[0], self.sensor_size[1])
+        str += "\nFoV = [%.2f, %.2f] deg" % (self.fov[0], self.fov[1])
+        str += "\nFocal = [%.2f, %.2f] px" % (self.focal[0], self.focal[1])
+        str += "\n-------------------------------"
+        return str
+
 ######################
 # Parameters
 ######################
@@ -15,41 +37,12 @@ plt.ion()
 LINE_W = 2
 
 # Stereo cameras
-SIZE_SENSOR = (480, 640)
-FOCAL_H_PXL = 700  # [mm]
-FOCAL_V_PXL = FOCAL_H_PXL  # [mm]
+cameras = [Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5)]
 
-BASELINE = [50.0, 70.0]  # [mm]
-SUBPIXEL = [1., 1. / 16]  # pixel
+print "Cameras"
+for cam in cameras:
+    print cam
 
-print '------------------'
-print 'Parameters'
-print 'Sensor size [H,W]] = [%d,%d] pixel' % SIZE_SENSOR
-print 'Focal length [H,V] = [%.1f,%.1f] pixel' % (FOCAL_H_PXL, FOCAL_V_PXL)
-
-######################
-# Field of View
-######################
-
-FOV_H = 2 * np.arctan2(SIZE_SENSOR[1] / 2, FOCAL_H_PXL)
-FOV_V = 2 * np.arctan2(SIZE_SENSOR[0] / 2, FOCAL_V_PXL)
-
-print '\n------------------'
-print 'Field of view'
-print 'FOV_H = %.1f degrees' % (FOV_H / np.pi * 180)
-print 'FOV_V = %.1f degrees' % (FOV_V / np.pi * 180)
-
-######################
-# Minimum distance common FOV
-######################
-
-MIN_D = []
-for b in BASELINE:
-    MIN_D.append(np.tan(np.pi / 2 - FOV_H / 2) * b / 2)
-
-print '\n------------------'
-print 'Minimum distance common FOV'
-print '\n'.join(['%d [mm] (baseline %d [mm])' % dmin for dmin in zip(MIN_D, BASELINE)])
 
 ######################
 # Percentage overlapping FOV
@@ -58,14 +51,14 @@ print '\n'.join(['%d [mm] (baseline %d [mm])' % dmin for dmin in zip(MIN_D, BASE
 Z_VEC = np.arange(300, 2001, 10)
 
 plt.figure()
-for b in BASELINE:
-    percFov = 1 - b * FOCAL_H_PXL / (Z_VEC * SIZE_SENSOR[1])
-    currP = plt.plot(Z_VEC, percFov, label=('Baseline=%d' % b))
+for cam in cameras:
+    percFov = 1 - cam.baseline * cam.focal[1] / (Z_VEC * cam.sensor_size[1])
+    plt.plot(Z_VEC, percFov, label=cam.name)
 
 plt.title('Percentage common FoV')
 plt.xlabel('Distance [mm]')
 plt.ylabel('Common FoV [%]')
-plt.legend(loc='upper left')
+plt.legend(loc='lower right')
 plt.xlim((Z_VEC[0], Z_VEC[-1]))
 plt.grid()
 for l in plt.gca().lines:
@@ -79,13 +72,11 @@ plt.show()
 # Size of FOV
 ######################
 
-Z_VEC = np.arange(300, 2001, 10)
-
 plt.figure()
-for b in BASELINE:
-    percFov = 1 - b * FOCAL_H_PXL / (Z_VEC * SIZE_SENSOR[1])
-    sizeFov = percFov * 2 * np.tan(FOV_H / 2.) * Z_VEC
-    currP = plt.plot(Z_VEC, sizeFov, label=('Baseline=%d' % b))
+for cam in cameras:
+    percFov = 1 - cam.baseline * cam.focal[1] / (Z_VEC * cam.sensor_size[1])
+    sizeFov = percFov * 2 * np.tan(cam.fov_rad[1] / 2.) * Z_VEC
+    plt.plot(Z_VEC, sizeFov, label=cam.name)
 
 plt.title('Size of common H FoV')
 plt.xlabel('Distance [mm]')
@@ -101,9 +92,10 @@ plt.show()
 # plt.savefig('sizecommonfovh.png', transparent = True)
 
 plt.figure()
-for b in BASELINE:
-    sizeFov = 2 * np.tan(FOV_H / 2.) * Z_VEC
-    currP = plt.plot(Z_VEC, sizeFov, label=('Baseline=%d' % b))
+for cam in cameras:
+    percFov = 1 - cam.baseline * cam.focal[0] / (Z_VEC * cam.sensor_size[0])
+    sizeFov = percFov * 2 * np.tan(cam.fov_rad[0] / 2.) * Z_VEC
+    plt.plot(Z_VEC, sizeFov, label=cam.name)
 
 plt.title('Size of common V FoV')
 plt.xlabel('Distance [mm]')
@@ -122,13 +114,10 @@ plt.show()
 # Depth resolution
 ######################
 
-Z_VEC = np.arange(300, 2001, 10)
-
 plt.figure()
-for b in BASELINE:
-    for s in SUBPIXEL:
-        deltaZ = Z_VEC ** 2 / (FOCAL_H_PXL * b - Z_VEC * s) * s
-        currP = plt.plot(Z_VEC, deltaZ, label=('Baseline=%d\nSubpixel=%.3f' % (b, s)))
+for cam in cameras:
+    deltaZ = Z_VEC ** 2 / (cam.focal[1] * cam.baseline - Z_VEC * cam.subpixel) * cam.subpixel
+    plt.plot(Z_VEC, deltaZ, label=cam.name)
 
 plt.title('Depth resolution at different distance')
 plt.xlabel('Distance [mm]')
@@ -147,12 +136,10 @@ plt.show()
 # Disparity vs Depth
 ######################
 
-Z_VEC = np.arange(300, 2001, 10)
-
 plt.figure()
-for b in BASELINE:
-    disparity = b * FOCAL_H_PXL / Z_VEC
-    plt.plot(Z_VEC, disparity, label=('Baseline=%d' % b))
+for cam in cameras:
+    disparity = cam.baseline * cam.focal[1] / Z_VEC
+    plt.plot(Z_VEC, disparity, label=cam.name)
 
 plt.title('Disparity at different distance')
 plt.xlabel('Distance [mm]')
