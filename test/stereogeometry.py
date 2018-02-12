@@ -14,7 +14,7 @@ class Camera:
         self.fov_rad = np.deg2rad(np.asarray(fov))
         self.baseline = float(baseline)
         self.subpixel = float(subpixel)
-        self.name = "%s_%s_%dx%d_b%.0f" % (sensor_name, lens_name, self.sensor_size[0], self.sensor_size[1], self.baseline)
+        self.name = "%s_%s_b%.0f" % (sensor_name, lens_name, self.baseline)
 
         # Computed
         self.focal = self.sensor_size / 2.0 / np.tan(self.fov_rad / 2.0)
@@ -33,11 +33,11 @@ class Camera:
 ######################
 
 # Visualization
-plt.ion()
 LINE_W = 2
 
 # Stereo cameras
-cameras = [Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5)]
+cameras = []
+cameras.append(Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5))
 
 print "Cameras"
 for cam in cameras:
@@ -65,7 +65,6 @@ for l in plt.gca().lines:
     plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth=LINE_W)
-plt.show()
 # plt.savefig('commonfov.png', transparent = True)
 
 ######################
@@ -88,7 +87,6 @@ for l in plt.gca().lines:
     plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth=LINE_W)
-plt.show()
 # plt.savefig('sizecommonfovh.png', transparent = True)
 
 plt.figure()
@@ -107,7 +105,6 @@ for l in plt.gca().lines:
     plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth=LINE_W)
-plt.show()
 # plt.savefig('sizecommonfovv.png', transparent = True)
 
 ######################
@@ -129,7 +126,8 @@ for l in plt.gca().lines:
     plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth=LINE_W)
-plt.show()
+for p in np.arange(1, 5, 1):
+    plt.plot(Z_VEC, Z_VEC * p / 100.0, 'k--')
 # plt.savefig('depthres.png', transparent = True)
 
 ######################
@@ -151,8 +149,6 @@ for l in plt.gca().lines:
     plt.setp(l, linewidth=LINE_W)
 for l in plt.gca().get_legend().get_lines():
     plt.setp(l, linewidth=LINE_W)
-plt.show()
 # plt.savefig('disparitydepth.png', transparent = True)
 
-plt.ioff()
 plt.show()
