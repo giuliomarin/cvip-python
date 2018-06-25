@@ -1,4 +1,5 @@
 from cvip import ymlparser
+from cvip import xmlparser
 from collections import OrderedDict
 import numpy as np
 import cv2
@@ -218,8 +219,13 @@ def printMat(m):
 
 
 if __name__ == '__main__':
-    n = 6
-    if n == 6:
+    n = 7
+    if n ==7:
+        calib = xmlparser.parse('/Data/13_calibration/ext_plane/test_ext_plane/extrinsics2.xml')
+        RT1 = createRT(xmlparser.get(calib, ['camera_calibrations', 'camera_1', 'R']), xmlparser.get(calib, ['camera_calibrations', 'camera_1', 'T']))
+        RT2 = createRT(xmlparser.get(calib, ['camera_calibrations', 'camera_2', 'R']), xmlparser.get(calib, ['camera_calibrations', 'camera_2', 'T']))
+        print RT2.dot(invRT(RT1))
+    elif n == 6:
         calib1 = SensorCalib('/Data/0_Dataset/multicam/bin/calib_out_s1c1_s2c2_40.yml')
         calib2 = SensorCalib('/Data/0_Dataset/multicam_out/calib_s2.yml')
         RT1 = getExtrinsics(calib1.camera_calib[1])

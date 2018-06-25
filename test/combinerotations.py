@@ -1,9 +1,11 @@
 from cvip import transformations as tf
 from cvip import ymlparser as yml
 from cvip import xmlparser as xml
+from calibration import utils as calib_utils
 import numpy as np
+import xmltodict
 
-if 1:
+if 0:
     calib_kinect = yml.parse('/Data/0_Dataset/multicam_out/calib_kinect.yml')
     calib_zed = yml.parse('/Data/0_Dataset/multicam_out/calib_zed.yml')
     calib_r200 = yml.parse('/Data/0_Dataset/multicam_out/calib_r200.yml')
@@ -124,3 +126,26 @@ if 0:
     print T.transpose()
     print Trot.transpose()
     print Tnew.transpose()
+
+if 1:
+    # Parameters
+    offset = [0, 100, 0]
+    planeCalibPath = "/Data/1_seat/magna1/2018_06_04_06_54_15/front/ProcessedCalib/groundPlane2.xml"
+
+    # Get current RT
+    calib = xml.parse(planeCalibPath)
+    R = xml.get(calib, ['R'])
+    T = xml.get(calib, ['T'])
+    RT = np.eye(4)
+    RT[:3, :3] = R
+    RT[:3, 3] = T.reshape(3)
+
+    # Apply offset
+    offsetRT = np.eye(4)
+    offsetRT[:3, 3] = np.array(offset)
+    RT = RT.dot(offsetRT)
+
+    # Save data
+    xml.set(calib, ['R'], RT[:3, :3])
+    xml.set(calib, ['T'], RT[:3, 3])
+    xml.write(calib, planeCalibPath.replace(".xml", "_new.xml"))

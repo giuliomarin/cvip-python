@@ -34,10 +34,21 @@ class Camera:
 
 # Visualization
 LINE_W = 2
+Z_VEC = np.arange(300, 2001, 10)
 
 # Stereo cameras
 cameras = []
-cameras.append(Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5))
+# cameras.append(Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5))
+cameras.append(Camera("sir21", "?", (480, 640), (36.7, 47.0), 50.0, 0.5))
+cameras.append(Camera("sir30", "?", (480, 640), (54.6, 69.0), 50.0, 0.5))
+aptina_f = (51.6, 76.1)
+cameras.append(Camera("aptina_f", "DHB5025", (800, 1280), aptina_f, 60.0, 0.5))
+cameras.append(Camera("aptina_h", "DHB5025", (400, 640), aptina_f, 60.0, 0.5))
+# aptina_f = (54.0, 69.0)
+# cameras.append(Camera("aptina_f", "DIF04043EH", (800, 1280), aptina_f, 50.0, 0.5))
+# cameras.append(Camera("aptina_f", "DIF04043EH", (800, 1280), aptina_f, 65.0, 0.5))
+# cameras.append(Camera("aptina_h", "DIF04043EH", (400, 640), aptina_f, 50.0, 0.5))
+# cameras.append(Camera("aptina_h", "DIF04043EH", (400, 640), aptina_f, 65.0, 0.5))
 
 print "Cameras"
 for cam in cameras:
@@ -47,8 +58,6 @@ for cam in cameras:
 ######################
 # Percentage overlapping FOV
 ######################
-
-Z_VEC = np.arange(300, 2001, 10)
 
 plt.figure()
 for cam in cameras:

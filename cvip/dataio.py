@@ -34,7 +34,7 @@ def imread(imgPath):
         return img, 1
     else:
         # png image
-        img = cv2.imread(imgPath, -1)
+        img = numpy.asarray(cv2.imread(imgPath, -1))
 
         if (img.ndim > 2) and (img.shape[2] == 4):
             # float

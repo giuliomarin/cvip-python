@@ -1874,3 +1874,9 @@ def is_same_transform(matrix0, matrix1):
     matrix1 = numpy.array(matrix1, dtype=numpy.float64, copy=True)
     matrix1 /= matrix1[3, 3]
     return numpy.allclose(matrix0, matrix1)
+
+
+if __name__ == "__main__":
+    M = numpy.array([[0, -1, 0, 0], [0, 0, 1, 0], [-1, 0, 0, 0], [0, 0, 0, 1]])
+    a, v, _ = rotation_from_matrix(M)
+    print (numpy.linalg.norm(a * v))
