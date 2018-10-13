@@ -1,5 +1,6 @@
 """
 Giulio Marin
+giulio.marin@me.com
 2018/06/05
 
 Utilities to load, get, modify and write xml files

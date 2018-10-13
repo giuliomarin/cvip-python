@@ -15,7 +15,7 @@ def opencv2matplotlib(img):
         return img
 
 
-def imread(imgPath):
+def imread(imgPath, alpha=True):
     """
     Load a char/float mat stored in a png file
         \param imgPath : path to the .png image
@@ -37,11 +37,13 @@ def imread(imgPath):
         img = numpy.asarray(cv2.imread(imgPath, -1))
 
         if (img.ndim > 2) and (img.shape[2] == 4):
-            # float
-            return imread32f(imgPath), 1
-        else:
-            # char
-            return opencv2matplotlib(img), 0
+            if alpha:
+                # float
+                return imread32f(imgPath), 1
+            else:
+                img = img[:, :, :3]
+        # char
+        return opencv2matplotlib(img), 0
 
 
 def imreadpfm(imgPath):
