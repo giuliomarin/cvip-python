@@ -34,13 +34,20 @@ class Camera:
 
 # Visualization
 LINE_W = 2
-Z_VEC = np.arange(300, 3001, 10)
+Z_VEC = np.arange(500, 5501, 10)
 
 # Stereo cameras
 cameras = []
 # cameras.append(Camera("test", "test", (480, 640), (37.0, 47.0), 50.0, 0.5))
 # cameras.append(Camera("sir21", "?", (480, 640), (36.7, 47.0), 50.0, 0.5)) # datasheet
-cameras.append(Camera("sir21", "AOET", (480, 640), (40, 50), 50.0, 0.5))
+# cameras.append(Camera("sir21", "AOET", (480, 640), (40, 50), 50.0, 0.5))
+cameras.append(Camera("sir21", "IR", (480, 640), (40, 50), 50.0, 0.5))
+cameras.append(Camera("sir21", "IR", (480, 640), (40, 50), 60.0, 0.5))
+cameras.append(Camera("sir40", "IR", (800, 1280), (40, 50), 50.0, 0.5))
+cameras.append(Camera("sir40", "IR", (800, 1280), (40, 50), 60.0, 0.5))
+cameras.append(Camera("sir40", "COLOR", (1536, 2048), (40, 50), 60.0, 0.5))
+cameras.append(Camera("sir40", "COLOR", (1536, 2048), (40, 50), 100.0, 0.5))
+cameras.append(Camera("sir40", "COLOR", (1536, 2048), (40, 50), 100.0, 0.5))
 # cameras.append(Camera("sir30", "?", (480, 640), (54.6, 69.0), 50.0, 0.5))
 # aptina_f = (51.6, 76.1)
 # cameras.append(Camera("aptina_f", "DHB5025", (800, 1280), aptina_f, 60.0, 0.5))

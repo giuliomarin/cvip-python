@@ -101,10 +101,12 @@ def createImagesc(img):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.argv.append('/Data/0_Dataset/multicam/calib/40/img_r1_s1_c3.png')
+        sys.argv.append('/data/13_calibration/sens_49/21_P_50C_00075/0_wall/reproc/2019_02_07_17_27_47/DataFlatWall/500/Depth/depth_1.png')
 
     print 'Keypress:\n[space] to save\n[ESC] to quit'
 
     imgPath = sys.argv[1]
     img = cvip.dataio.imread32f(imgPath)
-    createImagesc(img)
+    plt.imshow(img)
+    plt.show()
+    # createImagesc(img)

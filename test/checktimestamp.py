@@ -15,6 +15,12 @@ def getTimestamp(img):
             n += s2
     return n
 
+def getTimestampDiff(t1, t2):
+    if t1 > t2:
+        return np.int(t1 - t2)
+    else:
+        return -np.int(t2 - t1)
+
 ts = []
 seqs = [
 '/Data/14_metal/dearborn/2018_10_01_18_58_21_a copy/side0/sirs/sir0/Frames/master_1.png',

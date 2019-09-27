@@ -149,7 +149,7 @@ def imwrite32f(imgPath, img):
 
 if __name__ == '__main__':
     import sys
-    img = imread('/Data/0_Dataset/multicam_out/Result/6/ToF/confidenceTofMeasure_f.png')[0]
+    img = imread(sys.argv[1])[0]
     # img = imread(sys.argv[1])[0]
     # imgorig = img.copy()
     # img[img <= 0] = numpy.nan
