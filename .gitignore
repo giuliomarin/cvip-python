@@ -1,8 +1,9 @@
 # Compiled files
 *.pyc
 
-# PyCharm
+# Editors
 .idea
+.vscode
 
 # MacOS
 .DS_Store
