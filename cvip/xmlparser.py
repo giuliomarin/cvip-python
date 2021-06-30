@@ -97,4 +97,4 @@ def write(node, filename):
 
 if __name__ == '__main__':
     calib = parse('/media/data/cache/build/bin/front/ProcessedCalib/extrinsics2.xml')
-    print get(calib, ['camera_calibrations', 'camera_0', 'K'])
+    print(get(calib, ['camera_calibrations', 'camera_0', 'K']))

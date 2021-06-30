@@ -9,7 +9,7 @@ giulio.marin@me.com
 
 import numpy as np
 from collections import OrderedDict
-from pyaml import *
+# from pyaml import *
 
 ###########################################################
 # Constant
@@ -62,7 +62,7 @@ def checkFile(ymlFilePath):
     try:
         yamlObj = parse(ymlFilePath)
         success = True
-    except Exception, e:
+    except Exception as e:
         print('Failed to parse yaml file.\nError: ' + str(e))
         success = False
 
@@ -83,7 +83,7 @@ def parse(ymlFilePath):
     try:
         yamlObj = yaml.load(strToRead)
         success = True
-    except Exception, e:
+    except Exception as e:
         raise Exception('Failed to parse yaml file.\nError: ' + str(e))
 
     # return
@@ -117,7 +117,7 @@ def getInfoFromNode(ymlObj, nodePath):
         value = ymlObj
         return value
 
-    except Exception, err:
+    except Exception as err:
         raise Exception('Cannot get to the end of path ' + str(nodePath) + ' in file ' + ymlFilePath + '\nError found: ' + str(err.message))
 
 

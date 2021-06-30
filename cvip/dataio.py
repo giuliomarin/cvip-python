@@ -91,7 +91,7 @@ def imwrite(imgPath, img, colmap = None):
         \img : image to store
     """
 
-    print 'Writing: %s' % imgPath
+    print('Writing: %s' % imgPath)
     if img.dtype == numpy.float32:
         return imwrite32f(imgPath, img)
     else:

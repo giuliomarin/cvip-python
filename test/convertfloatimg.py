@@ -30,13 +30,13 @@ def cropandsave(img, img_pathout, roi=None, minmax=(0., 1.), mask=None, colmap=N
 if __name__ == '__main__':
     n = 4
     if n == 5:
-        print "Reading: %s" % sys.argv[1]
+        print("Reading: %s" % sys.argv[1])
         img = dataio.imread(sys.argv[1])[0]
         imgVals = img.copy()
         imgVals[img <= 0] = np.nan
         minv = np.nanpercentile(imgVals, 1)
         maxv = np.nanpercentile(imgVals, 99)
-        print "Min: %f Max: %f" % (minv, maxv)
+        print("Min: %f Max: %f" % (minv, maxv))
         if len(sys.argv) == 3:
             outfile = sys.argv[2]
         else:
@@ -47,21 +47,21 @@ if __name__ == '__main__':
                     None,
                     cm.jet)
     if n == 4:
-        print "Reading: %s" % sys.argv[1]
+        print("Reading: %s" % sys.argv[1])
         img = dataio.imread(sys.argv[1])[0]
         imgVals = img.copy()
         imgVals[img <= 0] = np.nan
         minv = np.nanpercentile(imgVals, 1)
         maxv = np.nanpercentile(imgVals, 99)
-        print "Min: %f Max: %f" % (minv, maxv)
+        print("Min: %f Max: %f" % (minv, maxv))
         if len(sys.argv) >= 4:
             minv = float(sys.argv[2])
             maxv = float(sys.argv[3])
-            print "Min: %f Max: %f" % (minv, maxv)
+            print("Min: %f Max: %f" % (minv, maxv))
         if len(sys.argv) == 5:
             outfile = sys.argv[4]
         else:
-            outfile = sys.argv[1].replace('.png', '_viz.png')
+            outfile = sys.argv[1].replace('.tiff', '_viz.png')
         cropandsave(img, outfile,
                     None,
                     (minv, maxv),
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         imgVals[img <= 0] = np.nan
         minv = np.nanpercentile(imgVals, 1)
         maxv = np.nanpercentile(imgVals, 99)
-        print "Min: %f Max: %f" % (minv, maxv)
+        print("Min: %f Max: %f" % (minv, maxv))
         # minv = 0
         # maxv = 100
         cropandsave(img, sys.argv[1].replace('.png', '_viz.png'),
