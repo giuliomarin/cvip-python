@@ -313,6 +313,11 @@ if True:
     # Print and calibration parameters
     calibstr = 'K_l:\n%s\nD_l:\n%s\nK_r:\n%s\nD_l:\n%s\nR:\n%s\nT:\n%s' % (tostr(K_l, 2), tostr(D_l, 5), tostr(K_r, 2), tostr(D_r, 5), tostr(R, 3), tostr(T, 3))
     print(calibstr)
+    # The rotation vector is (axis * angle), so calculate angle and axis
+    rotation_vector, _ = cv2.Rodrigues(R)
+    angle = np.linalg.norm(rotation_vector)
+    axis = rotation_vector / angle if angle != 0 else np.array([1, 0, 0])  # Default axis if angle is zero
+    print(f"Angle between cameras {np.rad2deg(angle):.2f}°, axis: {axis.T[0]}")
     print('Save calibration')
     with open(imgfilebase % 'calib.txt', 'w') as calibfile:
         calibfile.write(calibstr)
