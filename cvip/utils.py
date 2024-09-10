@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import transformations as tf
+from . import transformations as tf
 import numpy as np
-import dataio
+from . import dataio
 import cv2
 import os
 
@@ -85,7 +85,7 @@ def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):
         try:
             img, _ = dataio.imread(imageName)
         except:
-            print 'Image not valid: %s' % imageName
+            print('Image not valid: %s' % imageName)
             continue
         if img is None:
             continue
@@ -107,7 +107,7 @@ def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):
         else:
             # Discard images with different size
             if (imgRows != g_imgRows) | (imgCols != g_imgCols) | (imgChannels != g_imgChannels):
-                print 'Skipped image: %s' % imageName
+                print('Skipped image: %s' % imageName)
                 continue
 
             imgNum = imgNum + 1
@@ -125,7 +125,7 @@ def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):
             else:
                 imgMergeRow = np.concatenate((imgMergeRow, img), axis = 1)
 
-        print 'Added file: %s' % imageName
+        print('Added file: %s' % imageName)
 
     # Check if last row is not full
     if imgMergeRow.shape[1] != numCols * g_imgCols:
@@ -144,7 +144,7 @@ def mergeimages(imagesList, numCols, resize = 1.0, nameOut = None):
     # Save imageName
     if nameOut:
         cv2.imwrite(nameOut, imgMerge)
-        print("Done: " + nameOut)
+        print(("Done: " + nameOut))
     return imgMerge
 
 

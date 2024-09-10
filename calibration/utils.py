@@ -212,10 +212,10 @@ def drawCheckerboard(img, K, R, T, nx=10, ny=8, sx=20, sy=20):
     return img
 
 def printMat(m):
-    print 'rows: %d' % m.shape[0]
-    print 'cols: %d' % (m.shape[1] if len(m.shape) > 1 else 1)
-    print 'dt: d'
-    print 'data: [%s]' % ', '.join([str(v) for v in m.flatten()])
+    print(('rows: %d' % m.shape[0]))
+    print(('cols: %d' % (m.shape[1] if len(m.shape) > 1 else 1)))
+    print('dt: d')
+    print(('data: [%s]' % ', '.join([str(v) for v in m.flatten()])))
 
 
 if __name__ == '__main__':
@@ -224,7 +224,7 @@ if __name__ == '__main__':
         calib = xmlparser.parse('/Data/13_calibration/ext_plane/test_ext_plane/extrinsics2.xml')
         RT1 = createRT(xmlparser.get(calib, ['camera_calibrations', 'camera_1', 'R']), xmlparser.get(calib, ['camera_calibrations', 'camera_1', 'T']))
         RT2 = createRT(xmlparser.get(calib, ['camera_calibrations', 'camera_2', 'R']), xmlparser.get(calib, ['camera_calibrations', 'camera_2', 'T']))
-        print RT2.dot(invRT(RT1))
+        print((RT2.dot(invRT(RT1))))
     elif n == 6:
         calib1 = SensorCalib('/Data/0_Dataset/multicam/bin/calib_out_s1c1_s2c2_40.yml')
         calib2 = SensorCalib('/Data/0_Dataset/multicam_out/calib_s2.yml')
@@ -255,7 +255,7 @@ if __name__ == '__main__':
         for calib_idx in calib.camera_calib:
             calib_cam = calib.camera_calib[calib_idx]
             RT = getExtrinsics(calib_cam)[:3, :]
-            print '\ncam %d' % calib_idx
+            print(('\ncam %d' % calib_idx))
             printMat(RT)
             printMat(invRT(RT))
     elif n == 3:
@@ -279,4 +279,4 @@ if __name__ == '__main__':
         ymlparser.write('/Data/0_Dataset/multicam_out/calib_s1_small.yml', calib)
     elif n == 0:
         calib = SensorCalib('/Users/giulio/git/sampledata/calib.yml')
-        print calib
+        print(calib)

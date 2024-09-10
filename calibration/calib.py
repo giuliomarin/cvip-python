@@ -71,7 +71,7 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 60, 0.01)
 
 # Loop on images
 for fname in images:
-    print 'Image: %s' % fname,
+    print('Image: %s' % fname, end=' ')
     # load image and convert to grayscale
     img = cv2.imread(fname, cv2.IMREAD_UNCHANGED)
     if len(img.shape) > 2:
@@ -87,9 +87,9 @@ for fname in images:
 
     # If not found skip impage
     if ret is not True:
-        print ' [not found]'
+        print(' [not found]')
     else:
-        print ' [found]'
+        print(' [found]')
         n_valid += 1
 
         # refinine image points using subpixel accuracy
@@ -115,32 +115,32 @@ for fname in images:
     cv2.imshow('all points', imgAll)
     cv2.waitKey(1)
 
-print '\n%d checkerboards detected' % n_valid
-print '%d checkerboards not detected' % (len(images) - n_valid)
+print('\n%d checkerboards detected' % n_valid)
+print('%d checkerboards not detected' % (len(images) - n_valid))
 
 # Save image points for debug
 # cv2.imwrite(imgfilebase % 'allpoints.png', imgAll)
 
 # Calibration routine
-print '\nCompute calibration'
+print('\nCompute calibration')
 ret, K, D, rvecs, tvecs = cv2.calibrateCamera(objPoints, imgPoints, gray.shape[::-1], None, None)
 
 # Print and calibration parameters
 calibstr = 'K:\n%s\nD:\n%s' % (tostr(K, 2), tostr(D, 5))
-print calibstr
+print(calibstr)
 # print 'Save calibration'
 # with open(imgfilebase % 'calib.txt', 'w') as calibfile:
 #     calibfile.write(calibstr)
 
 # Compute reprojection error
-print '\nCompute reprojection error'
+print('\nCompute reprojection error')
 mean_error = 0
-for i in xrange(len(objPoints)):
+for i in range(len(objPoints)):
     # reproject points
     reprojPoints, _ = cv2.projectPoints(objPoints[i], rvecs[i], tvecs[i], K, D)
     # compute error
     error = cv2.norm(imgPoints[i], reprojPoints, cv2.NORM_L2) / len(reprojPoints)
     mean_error += error
 
-print 'Reprojection error: %.3f [pixel]' % (mean_error / len(objPoints))
+print('Reprojection error: %.3f [pixel]' % (mean_error / len(objPoints)))
 cv2.waitKey(0)

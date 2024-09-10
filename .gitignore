@@ -11,3 +11,6 @@
 # Unit tests
 unittests/tmp.png
 unittests/merge.png
+
+.venv
+.python-version

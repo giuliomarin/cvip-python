@@ -4,19 +4,24 @@ import glob
 import sys
 import xml.etree.ElementTree as et
 from random import uniform, randrange
+import os
 
-sys.path.append('/GitHub/cvip/python')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from cvip import *
 
 #########################
 # Parameters
 #########################
 
-imgfilebase = '/Users/giulio/Desktop/out/%s'
-imgfile_l = imgfilebase % 'master_*.png'
-imgfile_r = imgfilebase % 'slave_*.png'
-N_CHECKERS = (10, 8)  # (points_per_row,points_per_colum)
-SIZE_CHECKERS = 20.0  # mm
+# sample images https://github.com/sourishg/stereo-calibration/tree/master/calib_imgs
+imgfilebase = "/Users/giulio/Downloads/stereo-calibration-master/calib_imgs/1/%s"
+imgfile_l = "/Users/giulio/Downloads/stereo-calibration-master/calib_imgs/1/left*.jpg"
+imgfile_r = "/Users/giulio/Downloads/stereo-calibration-master/calib_imgs/1/right*.jpg"
+# imgfilebase = "/Users/giulio/Downloads/Test_calibration_set/Images/%s"
+# imgfile_l = "/Users/giulio/Downloads/Test_calibration_set/Images/Left/DSC_00*.jpeg"
+# imgfile_r = "/Users/giulio/Downloads/Test_calibration_set/Images/Right/DSC_00*.jpeg"
+N_CHECKERS = (9, 6)  # (points_per_row,points_per_colum)
+SIZE_CHECKERS = 24.23  # mm
 
 # Visualization
 H_IMGS = 400  # -1 for original size
@@ -118,7 +123,7 @@ def getoptimalimg(img):
 
 
 def getimage(imgpath):
-    print 'Image: %s' % imgpath,
+    print('Image: %s' % imgpath)
     # load image and convert to grayscale
     img, isfloat = dataio.imread(imgpath)
     if isfloat:
@@ -142,10 +147,10 @@ def processimg(img, gray, idx):
     isvalid = False
     # If not found skip impage
     if ret is not True:
-        print ' [not found]'
+        print(' [not found]')
         corners = None
     else:
-        print ' [found]'
+        print(' [found]')
         isvalid = True
         # refinine image points using subpixel accuracy
         cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
@@ -157,7 +162,7 @@ def processimg(img, gray, idx):
     pointSize = int(round(img.shape[1] / 350.0))
     for f in imgPoints[idx]:
         for p in f:
-            cv2.circle(imgtoshow, tuple(p[0]), pointSize, (145, 255, 145), -1)
+            cv2.circle(imgtoshow, tuple(p[0].astype(int)), pointSize, (145, 255, 145), -1)
     return imgtoshow, isvalid, corners
 
 
@@ -227,13 +232,13 @@ def loadcalib(calibpath):
 # Calibration
 ##########################
 
-newsize = (640, 480)
+newsize = (640, 360)
 # Load images
 images = [sorted(glob.glob(imgfile_l)), sorted(glob.glob(imgfile_r))]
 
 if True:
     if len(images) == 0:
-        sys.exit('No image matches: %s' % imgfilebase)
+        sys.exit('No image matches')
 
     # Prepare object points
     objp = np.zeros((np.prod(N_CHECKERS), 3), np.float32)
@@ -248,10 +253,10 @@ if True:
     n_valid = 0
 
     # Convergence criteria
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 60, 0.01)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     # Loop on images
-    for i in xrange(len(images[0])):
+    for i in range(len(images[0])):
         # Left camera
         img_l, gray_l = getimage(images[0][i])
         imgtoshow_l, isvalid_l, corners_l = processimg(img_l, gray_l, 0)
@@ -280,7 +285,7 @@ if True:
             cv2.waitKey(1)
 
     # Calibration routine
-    print '\nCompute calibration'
+    print('\nCompute calibration')
 
     objpoints = [objp for v in isvalid[0] if v]
     currimgpoints = [imgPoints[0][i] for i, v in enumerate(isvalid[0]) if v]
@@ -307,8 +312,8 @@ if True:
 
     # Print and calibration parameters
     calibstr = 'K_l:\n%s\nD_l:\n%s\nK_r:\n%s\nD_l:\n%s\nR:\n%s\nT:\n%s' % (tostr(K_l, 2), tostr(D_l, 5), tostr(K_r, 2), tostr(D_r, 5), tostr(R, 3), tostr(T, 3))
-    print calibstr
-    print 'Save calibration'
+    print(calibstr)
+    print('Save calibration')
     with open(imgfilebase % 'calib.txt', 'w') as calibfile:
         calibfile.write(calibstr)
 
@@ -318,7 +323,7 @@ K_l, D_l, K_r, D_r, R, T = loadcalib(imgfilebase % 'calib.txt')
 # Rectification
 R_l, R_r, P_l, P_r, _, _, _ = cv2.stereoRectify(K_l, D_l, K_r, D_r, newsize, R, T, flags = cv2.CALIB_ZERO_DISPARITY, alpha = 0)
 
-print 'P_l:\n%s\nP_r:\n%s' % (tostr(P_l, 2), tostr(P_r, 2))
+print('P_l:\n%s\nP_r:\n%s' % (tostr(P_l, 2), tostr(P_r, 2)))
 
 rectMap = [[[], []], [[], []]]
 rectMap[0][0], rectMap[0][1] = cv2.initUndistortRectifyMap(K_l, D_l, R_l, P_l, newsize, cv2.CV_16SC2)
@@ -328,8 +333,8 @@ idx = randrange(len(images[0]))
 img_l, gray_l = getimage(images[0][idx])
 img_r, gray_r = getimage(images[1][idx])
 
-img_l, gray_l = getimage(imgfile_l.replace('*', '1'))
-img_r, gray_r = getimage(imgfile_r.replace('*', '1'))
+# img_l, gray_l = getimage(images[0][0])
+# img_r, gray_r = getimage(images[1][0])
 
 imgRect_l = cv2.remap(img_l, rectMap[0][0], rectMap[0][1], cv2.INTER_CUBIC)
 imgRect_r = cv2.remap(img_r, rectMap[1][0], rectMap[1][1], cv2.INTER_CUBIC)
@@ -345,5 +350,5 @@ for pt in lines:
 cv2.imwrite(imgfilebase % 'rectimg2_1.png', imgRect_l)
 cv2.imwrite(imgfilebase % 'rectimg1_1.png', imgRect_r)
 
-cv2.imshow('curr img', imgtoshow)
+cv2.imshow('rectified', imgtoshow)
 cv2.waitKey(0)
